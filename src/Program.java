@@ -14,10 +14,11 @@ public class Program {
                 columns * MazeGenVisual.CELL_LENGTH);
         frame.getContentPane().setPreferredSize(contentDimensions);
         frame.pack();
-        frame.setVisible(true);
 
         MazeGenVisual visual = new MazeGenVisual(rows, columns);
         frame.add(visual);
+        frame.setVisible(true);
+
         visual.run();
     }
 }

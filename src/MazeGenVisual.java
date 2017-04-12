@@ -43,7 +43,6 @@ public class MazeGenVisual extends JComponent {
                         : generator_.maze()[i][j] ? PATH_COLOR
                         : WALL_COLOR);
                 g2.fill(cell);
-                System.out.println("fdsa");
             }
         }
     }
