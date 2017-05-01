@@ -9,9 +9,21 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
 
+/**
+ * Graphical maze generation.
+ */
 public class MazeGenVisual extends JComponent {
+    /**
+     * The width of a square.
+     */
     public static final int CELL_LENGTH = 10;
 
+    /**
+     * Constructs a new MazeGenVisual with the given number
+     * of rows and columns for the maze
+     * @param rows the number of rows in the maze (must be odd)
+     * @param columns the number of columns in the maze (must be odd)
+     */
     public MazeGenVisual(int rows, int columns) {
         this(new MazeGenerator(rows, columns));
     }
@@ -21,6 +33,9 @@ public class MazeGenVisual extends JComponent {
         current_ = new Point(0, 0);
     }
 
+    /**
+     * Generates the maze and repaints it after each step.
+     */
     public void run() {
         while ((current_ = generator_.step()) != null) {
             delayedRepaint();
@@ -31,6 +46,9 @@ public class MazeGenVisual extends JComponent {
         delayedRepaint();
     }
 
+    /**
+     * Generates the maze and repaints it after completion.
+     */
     public void finish() {
         generator_.generate();
         current_ = null;

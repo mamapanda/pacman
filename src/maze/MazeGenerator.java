@@ -5,7 +5,17 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * The class that generates mazes.
+ */
 public class MazeGenerator {
+    /**
+     * Constructs a new MazeGenerator that generates a maze
+     * with the given number of rows and columns.
+     *
+     * @param rows    the number of rows in the maze (must be odd)
+     * @param columns the number of columns in the maze (must be odd)
+     */
     public MazeGenerator(int rows, int columns) {
         if ((rows & columns & 1) == 0) {
             throw new IllegalArgumentException(
@@ -27,8 +37,8 @@ public class MazeGenerator {
      * Fully generates the maze.
      */
     public void generate() {
-        while (step() != null);
-        while (patchDeadEnd() != null);
+        while (step() != null) ;
+        while (patchDeadEnd() != null) ;
     }
 
     /**
@@ -53,6 +63,11 @@ public class MazeGenerator {
         }
     }
 
+    /**
+     * Patches the next dead end in the maze.
+     *
+     * @return the dead end that was fixed
+     */
     public Point patchDeadEnd() {
         for (int y = 0; y < maze().length; y += 2) {
             for (int x = 0; x < maze()[0].length; x += 2) {
@@ -74,10 +89,18 @@ public class MazeGenerator {
         return null;
     }
 
+    /**
+     * Checks if a point lies within the maze generated.
+     * @param p the point
+     * @return whether or not a point lies in this maze
+     */
     public boolean contains(Point p) {
         return (p.x | p.y) >= 0 && p.x < maze()[0].length && p.y < maze().length;
     }
 
+    /**
+     * @return the maze handled by this generator
+     */
     public boolean[][] maze() {
         return maze_;
     }
