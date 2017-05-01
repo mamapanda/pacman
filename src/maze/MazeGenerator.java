@@ -27,9 +27,8 @@ public class MazeGenerator {
      * Fully generates the maze.
      */
     public void generate() {
-        while (!finished()) {
-            step();
-        }
+        while (step() != null);
+        while (patchDeadEnd() != null);
     }
 
     /**
@@ -38,7 +37,7 @@ public class MazeGenerator {
      * @return the current visited point
      */
     public Point step() {
-        if (finished()) return null;
+        if (stack_.isEmpty()) return null;
 
         Point start = stack_.peekFirst();
         Point[] nexts = nextPoints(start);
@@ -54,16 +53,33 @@ public class MazeGenerator {
         }
     }
 
+    public Point patchDeadEnd() {
+        for (int y = 0; y < maze().length; y += 2) {
+            for (int x = 0; x < maze()[0].length; x += 2) {
+                Point current = new Point(x, y);
+                Point[] adjacents = adjacentPoints(current);
+                Point[] paths = Arrays.stream(adjacents)
+                    .filter(p -> maze()[p.y][p.x])
+                    .toArray(Point[]::new);
+                Point[] walls = Arrays.stream(adjacents)
+                    .filter(p -> !maze()[p.y][p.x])
+                    .toArray(Point[]::new);
+                if (paths.length == 1) {
+                    Point newPath = walls[rand_.nextInt(walls.length)];
+                    maze_[newPath.y][newPath.x] = true;
+                    return current;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean contains(Point p) {
         return (p.x | p.y) >= 0 && p.x < maze()[0].length && p.y < maze().length;
     }
 
     public boolean[][] maze() {
         return maze_;
-    }
-
-    public boolean finished() {
-        return stack_.isEmpty();
     }
 
     private boolean[][] maze_;
@@ -85,6 +101,18 @@ public class MazeGenerator {
         };
         return Arrays.stream(neighbors)
             .filter(p -> contains(p) && !maze_[p.y][p.x])
+            .toArray(Point[]::new);
+    }
+
+    private Point[] adjacentPoints(Point point) {
+        Point[] neighbors = new Point[]{
+            new Point(point.x - 1, point.y),
+            new Point(point.x + 1, point.y),
+            new Point(point.x, point.y - 1),
+            new Point(point.x, point.y + 1)
+        };
+        return Arrays.stream(neighbors)
+            .filter(this::contains)
             .toArray(Point[]::new);
     }
 }

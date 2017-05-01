@@ -6,8 +6,8 @@ import javax.swing.WindowConstants;
 
 public class Program {
     public static void main(String[] args) {
-        int rows = 71;
-        int columns = 127;
+        int rows = 31;
+        int columns = 51;
 
         JFrame frame = new JFrame("Keni Leni is a god.");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

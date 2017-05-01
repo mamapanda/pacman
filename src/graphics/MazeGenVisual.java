@@ -22,15 +22,13 @@ public class MazeGenVisual extends JComponent {
     }
 
     public void run() {
-        while (!generator_.finished()) {
-            try {
-                Thread.sleep(DRAW_DELAY);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            current_ = generator_.step();
-            repaint();
+        while ((current_ = generator_.step()) != null) {
+            delayedRepaint();
         }
+        while ((current_ = generator_.patchDeadEnd()) != null) {
+            delayedRepaint();
+        }
+        delayedRepaint();
     }
 
     public void finish() {
@@ -62,5 +60,14 @@ public class MazeGenVisual extends JComponent {
     private static final Color PATH_COLOR = Color.WHITE;
     private static final Color WALL_COLOR = Color.BLACK;
     private static final Color CURRENT_CELL_COLOR = Color.RED;
-    private static final int DRAW_DELAY = 1;
+    private static final int DRAW_DELAY = 5;
+
+    private void delayedRepaint() {
+        try {
+            Thread.sleep(DRAW_DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        repaint();
+    }
 }
