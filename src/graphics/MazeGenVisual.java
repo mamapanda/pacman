@@ -1,3 +1,7 @@
+package graphics;
+
+import maze.MazeGenerator;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,20 +31,26 @@ public class MazeGenVisual extends JComponent {
             current_ = generator_.step();
             repaint();
         }
-        current_ = new Point(-1, -1);
+    }
+
+    public void finish() {
+        generator_.generate();
+        current_ = null;
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        for (int i = 0; i < generator_.maze().length; i++) {
-            for (int j = 0; j < generator_.maze()[0].length; j++) {
+        for (int y = 0; y < generator_.maze().length; y++) {
+            for (int x = 0; x < generator_.maze()[0].length; x++) {
                 Rectangle cell = new Rectangle(
-                        i * CELL_LENGTH, j * CELL_LENGTH,
-                        CELL_LENGTH, CELL_LENGTH);
-                g2.setColor(current_.x == i && current_.y == j ? CURRENT_CELL_COLOR
-                        : generator_.maze()[i][j] ? PATH_COLOR
+                    x * CELL_LENGTH, y * CELL_LENGTH,
+                    CELL_LENGTH, CELL_LENGTH);
+                g2.setColor(
+                    current_ != null && current_.x == x && current_.y == y
+                        ? CURRENT_CELL_COLOR
+                        : generator_.maze()[y][x] ? PATH_COLOR
                         : WALL_COLOR);
                 g2.fill(cell);
             }
@@ -52,5 +62,5 @@ public class MazeGenVisual extends JComponent {
     private static final Color PATH_COLOR = Color.WHITE;
     private static final Color WALL_COLOR = Color.BLACK;
     private static final Color CURRENT_CELL_COLOR = Color.RED;
-    private static final int DRAW_DELAY = 25;
+    private static final int DRAW_DELAY = 1;
 }
