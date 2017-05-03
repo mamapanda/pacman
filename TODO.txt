@@ -4,11 +4,13 @@
 - Implement goal panel behavior.
 - Allow for public checking of player death and all goal panels reached.
 
-- RushGhost.java / StupidGhost.java / SmartGhost.java
+- RushGhost.java / SmartGhost.java
 - Actually make them.
 - RushGhost should use greedy search.
-- StupidGhost should make random moves.
 - SmartGhost should use an optimal path search algorithm (pref A* + Manhattan)
 
 - GameVisual.java
-- Actually make it.
+- Implement graphics.
+
+- EnemyFactory.java
+- Create an implementing class.

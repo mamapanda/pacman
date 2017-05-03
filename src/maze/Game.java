@@ -2,24 +2,30 @@ package maze;
 
 import entities.Direction;
 import entities.Enemy;
+import entities.EnemyFactory;
 import entities.Pacman;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class Game {
-    public Game(MazeGenerator generator, Pacman player, int goalCount) {
+    public Game(MazeGenerator generator,
+                Pacman player,
+                EnemyFactory enemyFactory,
+                int goalCount) {
         player_ = player;
         generator_ = generator;
         enemies_ = new ArrayList<>();
+        enemyFactory_ = enemyFactory;
+
+        enemies().addAll(enemyFactory_.initialBatch());
+
         initGoalTiles(goalCount);
     }
 
@@ -32,13 +38,29 @@ public abstract class Game {
         } catch (IllegalArgumentException ignored) {
             //No error action.
         }
+
         enemies().forEach(Enemy::move);
-        //check for death
+        enemies().forEach(e -> {
+            if (e.collidesWith(player())) {
+                player().die();
+            }
+        });
+
+        goalTiles().forEach(tile -> {
+            if (tile.equals(player().location())) {
+                goalTiles().remove(tile);
+            }
+        });
     }
 
-    public void reset() {
+    public void nextLevel() {
         generator().reset();
-        initGoalTiles(goalTiles().length);
+        initGoalTiles(goalTiles().size());
+        enemies().add(enemyFactory_.make());
+    }
+
+    public boolean levelFinished() {
+        return !player().alive() || goalTiles().size() == 0;
     }
 
     public Pacman player() {
@@ -53,7 +75,7 @@ public abstract class Game {
         return enemies_;
     }
 
-    public Point[] goalTiles() {
+    public List<Point> goalTiles() {
         return goalTiles_;
     }
 
@@ -62,10 +84,12 @@ public abstract class Game {
     private Pacman player_;
     private MazeGenerator generator_;
     private List<Enemy> enemies_;
-    private Point[] goalTiles_;
+    private List<Point> goalTiles_;
+    private EnemyFactory enemyFactory_;
 
     /**
      * Initializes the array of goal tiles.
+     *
      * @param goalCount the number of goal tiles.
      */
     private void initGoalTiles(int goalCount) {
@@ -83,6 +107,6 @@ public abstract class Game {
         goalTiles_ =
             availableTiles.stream()
                 .limit(goalCount)
-                .toArray(Point[]::new);
+                .collect(Collectors.toList());
     }
 }

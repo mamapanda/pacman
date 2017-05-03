@@ -1,7 +1,6 @@
 package entities;
 
 import maze.MazeGenerator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.Point;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public abstract class Enemy extends MazeEntity {
     protected abstract Direction getMove();
 
     protected int manhattanDistance(Point p) {
-        throw new NotImplementedException();
+        return Math.abs(p.x - target().x()) + Math.abs(p.y - target().y());
     }
 
     protected Direction[] possibleMoves(Point p) {
