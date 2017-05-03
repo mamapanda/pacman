@@ -1,6 +1,9 @@
 package entities;
 
 
+import maze.MazeGenerator;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * Write a description of class SmartEnemy here.
  * 
@@ -9,5 +12,13 @@ package entities;
  */
 public class SmartEnemy extends Enemy
 {
-    
+    public SmartEnemy(MazeGenerator generator, Pacman target, int x, int y)
+    {
+        super(generator, target, x, y);
+    }
+
+    public Direction getMove()
+    {
+        throw new NotImplementedException();
+    }
 }
