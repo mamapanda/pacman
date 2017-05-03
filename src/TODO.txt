@@ -1,0 +1,14 @@
+- Game.java
+- Make Game not generate overlapping goal panels.
+- Check for player death.
+- Implement goal panel behavior.
+- Allow for public checking of player death and all goal panels reached.
+
+- RushGhost.java / StupidGhost.java / SmartGhost.java
+- Actually make them.
+- RushGhost should use greedy search.
+- StupidGhost should make random moves.
+- SmartGhost should use an optimal path search algorithm (pref A* + Manhattan)
+
+- GameVisual.java
+- Actually make it.

@@ -21,8 +21,8 @@ public abstract class Game {
         for (int i = 0; i < panelCount; i++) {
             goalPanels_.add(
                 new Point(
-                    rand_.nextInt(generator_.maze().length),
-                    rand_.nextInt(generator_.maze()[0].length)));
+                    rand_.nextInt(generator_.maze()[0].length),
+                    rand_.nextInt(generator_.maze().length)));
         }
     }
 
