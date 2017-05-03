@@ -71,9 +71,9 @@ public class MazeGenVisual extends JComponent {
                 g2.fill(cell);
             }
         }
-        Point[] pts = generator_.specialTile();
         for (int i = 0; i < 4; i++)
         {
+            Point[] pts = generator_.specialTile();
             Point p = pts[i];
             int y = p.y;
             int x = p.x;
@@ -101,4 +101,5 @@ public class MazeGenVisual extends JComponent {
         }
         repaint();
     }
+    
 }

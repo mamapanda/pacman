@@ -178,5 +178,5 @@ public class MazeGenerator {
         return Arrays.stream(neighbors)
             .filter(this::contains)
             .toArray(Point[]::new);
-    }
+    }   
 }
