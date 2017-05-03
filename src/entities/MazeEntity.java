@@ -36,7 +36,7 @@ public abstract class MazeEntity {
                 newLoc.y++;
                 break;
         }
-        if (!generator_.contains(newLoc) || !generator_.maze()[newLoc.y][newLoc.x]) {
+        if (!generator_.hasPathAt(newLoc)) {
             throw new IllegalArgumentException("Illegal move error.");
         }
 
@@ -52,6 +52,10 @@ public abstract class MazeEntity {
         return location_.equals(other.location_);
     }
 
+    public Point location() {
+        return location_;
+    }
+
     /**
      * @return This entity's x location.
      */
@@ -64,6 +68,10 @@ public abstract class MazeEntity {
      */
     public int y() {
         return location_.y;
+    }
+
+    protected MazeGenerator generator() {
+        return generator_;
     }
 
     private Point location_;

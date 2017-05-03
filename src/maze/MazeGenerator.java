@@ -106,6 +106,15 @@ public class MazeGenerator {
     }
 
     /**
+     * Checks if a certain point is an open pathway in the maze.
+     * @param p the point
+     * @return idk fam what do you think
+     */
+    public boolean hasPathAt(Point p) {
+        return contains(p) && maze()[p.y][p.x];
+    }
+
+    /**
      * @return the maze handled by this generator
      */
     public boolean[][] maze() {
