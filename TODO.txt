@@ -1,8 +1,3 @@
-- Game.java
-- Make Game not generate overlapping goal panels.
-- Check for player death.
-- Implement goal panel behavior.
-- Allow for public checking of player death and all goal panels reached.
 
 - RushGhost.java / SmartGhost.java
 - Actually make them.
