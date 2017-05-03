@@ -9,7 +9,7 @@ public class Program {
         int rows = 31;
         int columns = 51;
 
-        JFrame frame = new JFrame("Keni Leni is a god.");
+        JFrame frame = new JFrame("Galactic Deity Daniel is not just a god.");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Dimension contentDimensions = new Dimension(
             columns * MazeGenVisual.CELL_LENGTH,

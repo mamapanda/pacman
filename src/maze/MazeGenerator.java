@@ -88,6 +88,31 @@ public class MazeGenerator {
         }
         return null;
     }
+    
+    /**
+     * Makes the special tiles.
+     * 
+     * @return the special tiles.
+     */
+    public Point[] specialTile()
+    {
+        Point[] pts = new Point[4];
+        for (int i = 0; i < 4; i++)
+        {
+            int y = (int) (Math.random() * maze().length);
+            int x = (int) (Math.random() * maze()[0].length);
+            Point p = new Point (x,y);
+            if (contains(p) && hasPathAt(p))
+            {
+                pts[i] = p;
+            }
+            else
+            {
+                i--;
+            }
+        }
+        return pts;
+    }
 
     /**
      * Clears the maze generated.

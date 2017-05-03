@@ -71,12 +71,25 @@ public class MazeGenVisual extends JComponent {
                 g2.fill(cell);
             }
         }
+        Point[] pts = generator_.specialTile();
+        for (int i = 0; i < 4; i++)
+        {
+            Point p = pts[i];
+            int y = p.y;
+            int x = p.x;
+            Rectangle c = new Rectangle(
+                    x * CELL_LENGTH, y * CELL_LENGTH,
+                    CELL_LENGTH, CELL_LENGTH);
+            g2.setColor(SPECIAL_COLOR);
+            g2.fill(c);
+        }
     }
-
+    
     private MazeGenerator generator_;
     private Point current_;
     private static final Color PATH_COLOR = Color.WHITE;
     private static final Color WALL_COLOR = Color.BLACK;
+    private static final Color SPECIAL_COLOR = Color.BLUE;
     private static final Color CURRENT_CELL_COLOR = Color.RED;
     private static final int DRAW_DELAY = 5;
 
