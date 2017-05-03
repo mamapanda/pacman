@@ -1,20 +1,20 @@
 package graphics;
 
-import entities.Enemy;
+import entities.MazeEntity;
 
 import javax.swing.JComponent;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
-public class EnemyVisual extends JComponent {
-    public EnemyVisual(Enemy core, String imgName, int cellLength) {
+public class EntityVisual extends JComponent {
+    public EntityVisual(MazeEntity core, String imgName, int cellLength) {
         core_ = core;
         img_ = ImageLoader.load(imgName);
         cellLength_ = cellLength;
     }
 
-    public Enemy core() {
+    public MazeEntity core() {
         return core_;
     }
 
@@ -31,7 +31,7 @@ public class EnemyVisual extends JComponent {
         g2.drawImage(image(), x, y, cellLength_, cellLength_, null);
     }
 
-    private Enemy core_;
+    private MazeEntity core_;
     private Image img_;
     private int cellLength_;
 }

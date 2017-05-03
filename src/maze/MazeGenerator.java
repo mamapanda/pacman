@@ -90,6 +90,13 @@ public class MazeGenerator {
     }
 
     /**
+     * Clears the maze generated.
+     */
+    public void reset() {
+        maze_ = new boolean[maze_.length][maze_[0].length];
+    }
+
+    /**
      * Checks if a point lies within the maze generated.
      * @param p the point
      * @return whether or not a point lies in this maze
