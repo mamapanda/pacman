@@ -7,23 +7,20 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class Game {
-    public Game(MazeGenerator generator, Pacman player, int panelCount) {
+    public Game(MazeGenerator generator, Pacman player, int goalCount) {
         player_ = player;
         generator_ = generator;
         enemies_ = new ArrayList<>();
-        goalPanels_ = new ArrayList<>();
-        rand_ = new Random();
-
-        for (int i = 0; i < panelCount; i++) {
-            goalPanels_.add(
-                new Point(
-                    rand_.nextInt(generator_.maze()[0].length),
-                    rand_.nextInt(generator_.maze().length)));
-        }
+        initGoalTiles(goalCount);
     }
 
     /**
@@ -36,10 +33,12 @@ public abstract class Game {
             //No error action.
         }
         enemies().forEach(Enemy::move);
+        //check for death
     }
 
     public void reset() {
-        throw new NotImplementedException();
+        generator().reset();
+        initGoalTiles(goalTiles().length);
     }
 
     public Pacman player() {
@@ -54,8 +53,8 @@ public abstract class Game {
         return enemies_;
     }
 
-    public List<Point> goalPanels() {
-        return goalPanels_;
+    public Point[] goalTiles() {
+        return goalTiles_;
     }
 
     protected abstract Direction getPlayerMove();
@@ -63,6 +62,27 @@ public abstract class Game {
     private Pacman player_;
     private MazeGenerator generator_;
     private List<Enemy> enemies_;
-    private List<Point> goalPanels_;
-    private Random rand_;
+    private Point[] goalTiles_;
+
+    /**
+     * Initializes the array of goal tiles.
+     * @param goalCount the number of goal tiles.
+     */
+    private void initGoalTiles(int goalCount) {
+        Function<Integer, Point[]> rowPoints = r ->
+            IntStream.range(0, generator().maze().length)
+                .mapToObj(c -> new Point(r, c))
+                .toArray(Point[]::new);
+        List<Point> availableTiles =
+            IntStream.range(0, generator().maze()[0].length)
+                .mapToObj(rowPoints::apply)
+                .flatMap(Arrays::stream)
+                .filter(generator()::contains)
+                .collect(Collectors.toList());
+        Collections.shuffle(availableTiles);
+        goalTiles_ =
+            availableTiles.stream()
+                .limit(goalCount)
+                .toArray(Point[]::new);
+    }
 }

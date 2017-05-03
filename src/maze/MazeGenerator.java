@@ -88,37 +88,18 @@ public class MazeGenerator {
         }
         return null;
     }
-    
-    /**
-     * Makes the special tiles.
-     * 
-     * @return the special tiles.
-     */
-    public Point[] specialTile()
-    {
-        Point[] pts = new Point[4];
-        for (int i = 0; i < 4; i++)
-        {
-            int y = (int) (Math.random() * maze().length);
-            int x = (int) (Math.random() * maze()[0].length);
-            Point p = new Point (x,y);
-            if (contains(p) && hasPathAt(p))
-            {
-                pts[i] = p;
-            }
-            else
-            {
-                i--;
-            }
-        }
-        return pts;
-    }
 
     /**
      * Clears the maze generated.
      */
     public void reset() {
         maze_ = new boolean[maze_.length][maze_[0].length];
+
+        Point first = new Point(0, 0);
+        stack_.clear();
+        stack_.addFirst(first);
+
+        maze_[first.y][first.x] = true;
     }
 
     /**
@@ -178,5 +159,5 @@ public class MazeGenerator {
         return Arrays.stream(neighbors)
             .filter(this::contains)
             .toArray(Point[]::new);
-    }   
+    }
 }
