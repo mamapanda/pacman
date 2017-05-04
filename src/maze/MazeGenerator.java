@@ -1,9 +1,15 @@
 package maze;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The class that generates mazes.
@@ -103,7 +109,53 @@ public class MazeGenerator {
     }
 
     /**
+     * Generates a number of random points in the maze.
+     * There are no duplicates in the list.
+     *
+     * @param count the number of points to generate
+     * @return i wonder
+     */
+    public List<Point> generatePoints(int count) {
+        return generatePoints(0, maze()[0].length, 0, maze().length, count);
+    }
+
+    public List<Point> generatePoints(int count, Quadrant quadrant) {
+        int xBoundL, xBoundR, yBoundU, yBoundD;
+
+        switch(quadrant) {
+            case I:
+                xBoundL = 0;
+                xBoundR = maze()[0].length / 2;
+                yBoundU = 0;
+                yBoundD = maze().length / 2;
+                break;
+            case II:
+                xBoundL = maze()[0].length / 2 + 1;
+                xBoundR = maze()[0].length;
+                yBoundU = 0;
+                yBoundD = maze().length / 2;
+                break;
+            case III:
+                xBoundL = 0;
+                xBoundR = maze()[0].length / 2;
+                yBoundU = maze().length / 2 + 1;
+                yBoundD = maze().length;
+                break;
+            case IV:
+                xBoundL = maze()[0].length / 2 + 1;
+                xBoundR = maze()[0].length;
+                yBoundU = maze().length / 2 + 1;
+                yBoundD = maze().length;
+                break;
+            default:
+                throw new IllegalArgumentException("Fuck you @generatePoints");
+        }
+        return generatePoints(xBoundL, xBoundR, yBoundU, yBoundD, count);
+    }
+
+    /**
      * Checks if a point lies within the maze generated.
+     *
      * @param p the point
      * @return whether or not a point lies in this maze
      */
@@ -113,6 +165,7 @@ public class MazeGenerator {
 
     /**
      * Checks if a certain point is an open pathway in the maze.
+     *
      * @param p the point
      * @return idk fam what do you think
      */
@@ -159,5 +212,25 @@ public class MazeGenerator {
         return Arrays.stream(neighbors)
             .filter(this::contains)
             .toArray(Point[]::new);
+    }
+
+    private List<Point> generatePoints(int xBoundL,
+                                       int xBoundR,
+                                       int yBoundU,
+                                       int yBoundD, int count) {
+        Function<Integer, Point[]> rowPoints = x ->
+            IntStream.range(xBoundL, xBoundR)
+                .mapToObj(y -> new Point(x, y))
+                .toArray(Point[]::new);
+        List<Point> availableTiles =
+            IntStream.range(yBoundU, yBoundD)
+                .mapToObj(rowPoints::apply)
+                .flatMap(Arrays::stream)
+                .filter(this::contains)
+                .collect(Collectors.toList());
+        Collections.shuffle(availableTiles);
+        return availableTiles.stream()
+            .limit(count)
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 }

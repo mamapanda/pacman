@@ -9,3 +9,5 @@
 
 - EnemyFactory.java
 - Create an implementing class.
+
+- Maybe actually clean up all the replicated code.

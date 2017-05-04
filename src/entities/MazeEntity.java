@@ -13,6 +13,7 @@ public abstract class MazeEntity {
     public MazeEntity(MazeGenerator generator, int x, int y) {
         generator_ = generator;
         location_ = new Point(x, y);
+        initialLocation_ = new Point(location());
     }
 
     /**
@@ -52,8 +53,16 @@ public abstract class MazeEntity {
         return location_.equals(other.location_);
     }
 
+    public void moveToInitialLocation() {
+        location_ = new Point(initialLocation_);
+    }
+
     public Point location() {
         return location_;
+    }
+
+    protected void setLocation(Point p) {
+        location_ = p;
     }
 
     /**
@@ -75,5 +84,6 @@ public abstract class MazeEntity {
     }
 
     private Point location_;
+    private Point initialLocation_;
     private MazeGenerator generator_;
 }

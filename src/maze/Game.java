@@ -26,7 +26,7 @@ public abstract class Game {
 
         enemies().addAll(enemyFactory_.initialBatch());
 
-        initGoalTiles(goalCount);
+        goalTiles_ = generator().generatePoints(goalCount);
     }
 
     /**
@@ -53,9 +53,14 @@ public abstract class Game {
         });
     }
 
+    /**
+     * Clears the maze, generates new goal points,
+     * and adds another enemy.
+     */
     public void nextLevel() {
         generator().reset();
-        initGoalTiles(goalTiles().size());
+        generator().generate();
+        goalTiles_ = generator().generatePoints(goalTiles().size());
         enemies().add(enemyFactory_.make());
     }
 
@@ -86,27 +91,4 @@ public abstract class Game {
     private List<Enemy> enemies_;
     private List<Point> goalTiles_;
     private EnemyFactory enemyFactory_;
-
-    /**
-     * Initializes the array of goal tiles.
-     *
-     * @param goalCount the number of goal tiles.
-     */
-    private void initGoalTiles(int goalCount) {
-        Function<Integer, Point[]> rowPoints = r ->
-            IntStream.range(0, generator().maze().length)
-                .mapToObj(c -> new Point(r, c))
-                .toArray(Point[]::new);
-        List<Point> availableTiles =
-            IntStream.range(0, generator().maze()[0].length)
-                .mapToObj(rowPoints::apply)
-                .flatMap(Arrays::stream)
-                .filter(generator()::contains)
-                .collect(Collectors.toList());
-        Collections.shuffle(availableTiles);
-        goalTiles_ =
-            availableTiles.stream()
-                .limit(goalCount)
-                .collect(Collectors.toList());
-    }
 }
