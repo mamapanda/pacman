@@ -49,7 +49,7 @@ public abstract class AdvancedEnemy extends Enemy {
             explored.add(node.value());
         }
 
-        while (goalNode.parent().parent() != null) {
+        while (goalNode.parent() != null && goalNode.parent().parent() != null) {
             goalNode = goalNode.parent();
         }
 

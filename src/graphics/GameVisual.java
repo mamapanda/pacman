@@ -2,47 +2,126 @@ package graphics;
 
 import entities.Direction;
 import entities.Enemy;
-import entities.EnemyFactory;
-import entities.Pacman;
 import maze.Game;
-import maze.MazeGenerator;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLayeredPane;
+import javax.swing.OverlayLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author Daniel Phan
  */
-public class GameVisual extends Game {
-    public GameVisual(MazeGenerator generator,
-                      Pacman player,
-                      EnemyFactory enemyFactory,
-                      int goalCount,
-                      String title) {
-        super(generator, player, enemyFactory, goalCount);
-        frame_ = new JFrame(title);
+public class GameVisual extends JLayeredPane implements KeyListener {
+    public GameVisual(Game core) {
+        setLayout(new OverlayLayout(this));
+        core_ = core;
         currentArrowEvent_ = null;
         initComponents();
-        initFrame();
-        initArrowListener();
     }
 
     public void run() {
-        while (!player().alive()) {
-            nextLevel();
-            while (!levelFinished()) {
-                step();
-                redrawEntities();
+        while (true) {
+            while (!core_.levelFinished()) {
+                try {
+                    Thread.sleep(UPDATE_DELAY);
+                } catch (InterruptedException ignored) {
+
+                }
+                core_.step(getPlayerMove());
+                repaint();
+            }
+            if (core_.player().alive()) {
+                nextLevel();
+            } else {
+                break;
             }
         }
     }
 
+    public Game core() {
+        return core_;
+    }
+
     @Override
-    protected Direction getPlayerMove() {
+    public boolean isOptimizedDrawingEnabled() {
+        return false;
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //Nothing
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (isArrow(e)) {
+            currentArrowEvent_ = e;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (currentArrowEvent_ != null
+            && e.getKeyCode() == currentArrowEvent_.getKeyCode()) {
+            currentArrowEvent_ = null;
+        }
+    }
+
+    private Game core_;
+    private KeyEvent currentArrowEvent_;
+    private static final int UPDATE_DELAY = 100;
+    private static final String PLAYER_IMG = "pacman.gif";
+    private static final String[] ENEMY_IMGs = {
+        "redghost.gif", "purpleghost.gif", "blueghost.gif"
+    };
+
+    private void initComponents() {
+        MazeGenVisual vGenerator = new MazeGenVisual(core_.generator());
+        vGenerator.finish();
+        add(vGenerator, Integer.valueOf(0));
+        add(new EntityVisual(core_.player(), PLAYER_IMG, MazeGenVisual.CELL_LENGTH),
+            Integer.valueOf(10));
+
+        for (Enemy e : core_.enemies()) {
+            String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
+            add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH),
+                Integer.valueOf(15));
+        }
+
+        add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
+    }
+
+    private void nextLevel() {
+        if (core_.goalTiles().size() != 0) {
+            throw new IllegalStateException("There are still goal tiles.");
+        }
+
+        core_.prepNext();
+
+        String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
+        add(
+            new EntityVisual(
+                core_.enemies().get(core_.enemies().size() - 1),
+                newEnemyIMG,
+                MazeGenVisual.CELL_LENGTH));
+        for (int i = 0; i < getComponentCount(); i++) {
+            if (getComponent(i) instanceof GoalTileVisual) {
+                remove(i);
+            }
+        }
+        add(new GoalTileVisual(core_.goalTiles()));
+    }
+
+    private boolean isArrow(KeyEvent e) {
+        int keycode = e.getKeyCode();
+        return keycode == KeyEvent.VK_UP
+            || keycode == KeyEvent.VK_DOWN
+            || keycode == KeyEvent.VK_LEFT
+            || keycode == KeyEvent.VK_RIGHT;
+    }
+
+    private Direction getPlayerMove() {
         Direction d = null;
         if (currentArrowEvent_ != null) {
             switch (currentArrowEvent_.getKeyCode()) {
@@ -63,99 +142,5 @@ public class GameVisual extends Game {
             }
         }
         return d;
-    }
-
-    private JFrame frame_;
-    private KeyEvent currentArrowEvent_;
-    private MazeGenVisual vGenerator_;
-    private EntityVisual vPlayer_;
-    private GoalTileVisual vGoalTiles_;
-    private List<EntityVisual> vEnemies_;
-    private static final int UPDATE_DELAY = 100;
-    private static final String PLAYER_IMG = "pacman.gif";
-    private static final String[] ENEMY_IMGs = {
-            "redghost.gif", "purpleghost.gif", "blueghost.gif"
-    };
-
-    private void initFrame() {
-        frame_.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Dimension contentDimensions = new Dimension(
-                generator().maze()[0].length * MazeGenVisual.CELL_LENGTH,
-                generator().maze().length * MazeGenVisual.CELL_LENGTH);
-        frame_.getContentPane().setPreferredSize(contentDimensions);
-        frame_.pack();
-
-        frame_.add(vGenerator_);
-        frame_.add(vPlayer_);
-        vEnemies_.forEach(frame_::add);
-
-        frame_.setVisible(true);
-    }
-
-    private void initComponents() {
-        vGenerator_ = new MazeGenVisual(generator());
-        vPlayer_ = new EntityVisual(player(), PLAYER_IMG, MazeGenVisual.CELL_LENGTH);
-
-        vEnemies_ = new LinkedList<>();
-        for (Enemy e : enemies()) {
-            String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
-            vEnemies_.add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH));
-        }
-
-        vGoalTiles_ = new GoalTileVisual(goalTiles());
-    }
-
-    private void redrawEntities() {
-        vPlayer_.repaint();
-        vEnemies_.forEach(EntityVisual::repaint);
-        vGoalTiles_.repaint();
-    }
-
-    private void nextLevel() {
-        if (goalTiles().size() != 0) {
-            throw new IllegalStateException("There are still goal tiles.");
-        }
-
-        prepNext();
-        vGenerator_.finish();
-
-        String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
-        vEnemies_.add(
-            new EntityVisual(
-                enemies().get(enemies().size() - 1),
-                newEnemyIMG,
-                MazeGenVisual.CELL_LENGTH));
-        vGoalTiles_ = new GoalTileVisual(goalTiles());
-    }
-
-    private void initArrowListener() {
-        frame_.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                //Nothing
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (isArrow(e)) {
-                    currentArrowEvent_ = e;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (isArrow(e)) {
-                    currentArrowEvent_ = null;
-                }
-            }
-
-            private boolean isArrow(KeyEvent e) {
-                int keycode = e.getKeyCode();
-                return keycode == KeyEvent.VK_UP
-                        || keycode == KeyEvent.VK_DOWN
-                        || keycode == KeyEvent.VK_LEFT
-                        || keycode == KeyEvent.VK_RIGHT;
-            }
-        });
     }
 }

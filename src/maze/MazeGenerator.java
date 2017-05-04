@@ -43,17 +43,17 @@ public class MazeGenerator {
      * Fully generates the maze.
      */
     public void generate() {
-        while (step() != null) ;
-        while (patchDeadEnd() != null) ;
+        while (step());
+        while (patchDeadEnd());
     }
 
     /**
      * Executes the next step of the maze generation.
      *
-     * @return the current visited point
+     * @return whether there is a next step
      */
-    public Point step() {
-        if (stack_.isEmpty()) return null;
+    public boolean step() {
+        if (stack_.isEmpty()) return false;
 
         Point start = stack_.peekFirst();
         Point[] nexts = nextPoints(start);
@@ -62,19 +62,19 @@ public class MazeGenerator {
             Point next = nexts[rand_.nextInt(nexts.length)];
             makePath(start, next);
             stack_.addFirst(next);
-            return next;
+            return true;
         } else {
             stack_.pollFirst();
-            return stack_.peekFirst();
+            return stack_.peekFirst() != null;
         }
     }
 
     /**
      * Patches the next dead end in the maze.
      *
-     * @return the dead end that was fixed
+     * @return if there are remaining dead ends
      */
-    public Point patchDeadEnd() {
+    public boolean patchDeadEnd() {
         for (int y = 0; y < maze().length; y += 2) {
             for (int x = 0; x < maze()[0].length; x += 2) {
                 Point current = new Point(x, y);
@@ -88,11 +88,11 @@ public class MazeGenerator {
                 if (paths.length == 1) {
                     Point newPath = walls[rand_.nextInt(walls.length)];
                     maze_[newPath.y][newPath.x] = true;
-                    return current;
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
     /**

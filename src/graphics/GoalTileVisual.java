@@ -20,11 +20,16 @@ public class GoalTileVisual extends JComponent {
         for (Point location : goalTiles_) {
             g2.fill(
                 new Rectangle(
-                    location.x,
-                    location.y,
+                    location.x * MazeGenVisual.CELL_LENGTH,
+                    location.y * MazeGenVisual.CELL_LENGTH,
                     MazeGenVisual.CELL_LENGTH,
                     MazeGenVisual.CELL_LENGTH));
         }
+    }
+
+    @Override
+    public String toString() {
+        return goalTiles_.toString();
     }
 
     private List<Point> goalTiles_;

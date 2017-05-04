@@ -7,13 +7,13 @@ import entities.Pacman;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public abstract class Game {
+public class Game {
     public Game(MazeGenerator generator,
                 Pacman player,
-                EnemyFactory enemyFactory,
-                int goalCount) {
+                EnemyFactory enemyFactory) {
         player_ = player;
         generator_ = generator;
         enemies_ = new ArrayList<>();
@@ -21,15 +21,17 @@ public abstract class Game {
 
         enemies().addAll(enemyFactory_.initialBatch());
 
-        goalTiles_ = generator().generatePoints(goalCount);
+        goalTiles_ = new LinkedList<>();
+        for (Quadrant q : Quadrant.values()) {
+            goalTiles().addAll(generator().generatePoints(1, q));
+        }
     }
 
     /**
      * Goes through one step of the game.
      */
-    public void step() {
+    public void step(Direction playerMove) {
         try {
-            Direction playerMove = getPlayerMove();
             if (playerMove != null) {
                 player().move(playerMove);
             }
@@ -90,8 +92,6 @@ public abstract class Game {
     public List<Point> goalTiles() {
         return goalTiles_;
     }
-
-    protected abstract Direction getPlayerMove();
 
     private Pacman player_;
     private MazeGenerator generator_;
