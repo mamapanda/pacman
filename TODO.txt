@@ -1,13 +1,10 @@
-
-- RushGhost.java / SmartGhost.java
-- Actually make them.
-- RushGhost should use greedy search.
-- SmartGhost should use an optimal path search algorithm (pref A* + Manhattan)
-
 - GameVisual.java
 - Implement graphics.
 
-- EnemyFactory.java
-- Create an implementing class.
+- GhostFactory.java
+- Complete the make method.
+
+- GhostVisualFactory.java
+- Make it.
 
 - Maybe actually clean up all the replicated code.
