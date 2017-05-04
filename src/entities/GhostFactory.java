@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class GhostFactory implements EnemyFactory {
@@ -43,15 +44,18 @@ public class GhostFactory implements EnemyFactory {
     }
 
     public Enemy make() {
+        Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
+        Random r = new Random();
+        Quadrant here = quad[r.nextInt(2)];
         int whichEnemy = (int) (Math.random() * 3);
+
         if (whichEnemy == 0) {
-
+            return new StupidEnemy();
         } else if (whichEnemy == 1) {
-
+            return new RushEnemy();
         } else {
-
+           return new SmartEnemy();
         }
-        throw new NotImplementedException();
     }
 
     private Pacman p;
