@@ -6,7 +6,6 @@ import entities.EnemyFactory;
 import entities.Pacman;
 import maze.Game;
 import maze.MazeGenerator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +32,13 @@ public class GameVisual extends Game {
     }
 
     public void run() {
-        throw new NotImplementedException();
+        while (!player().alive()) {
+            nextLevel();
+            while (!levelFinished()) {
+                step();
+                redrawEntities();
+            }
+        }
     }
 
     @Override
@@ -64,8 +69,8 @@ public class GameVisual extends Game {
     private KeyEvent currentArrowEvent_;
     private MazeGenVisual vGenerator_;
     private EntityVisual vPlayer_;
+    private GoalTileVisual vGoalTiles_;
     private List<EntityVisual> vEnemies_;
-    private static final Color SPECIAL_COLOR = Color.RED;
     private static final int UPDATE_DELAY = 100;
     private static final String PLAYER_IMG = "pacman.gif";
     private static final String[] ENEMY_IMGs = {
@@ -96,6 +101,31 @@ public class GameVisual extends Game {
             String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
             vEnemies_.add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH));
         }
+
+        vGoalTiles_ = new GoalTileVisual(goalTiles());
+    }
+
+    private void redrawEntities() {
+        vPlayer_.repaint();
+        vEnemies_.forEach(EntityVisual::repaint);
+        vGoalTiles_.repaint();
+    }
+
+    private void nextLevel() {
+        if (goalTiles().size() != 0) {
+            throw new IllegalStateException("There are still goal tiles.");
+        }
+
+        prepNext();
+        vGenerator_.finish();
+
+        String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
+        vEnemies_.add(
+            new EntityVisual(
+                enemies().get(enemies().size() - 1),
+                newEnemyIMG,
+                MazeGenVisual.CELL_LENGTH));
+        vGoalTiles_ = new GoalTileVisual(goalTiles());
     }
 
     private void initArrowListener() {
@@ -127,28 +157,5 @@ public class GameVisual extends Game {
                         || keycode == KeyEvent.VK_RIGHT;
             }
         });
-    }
-
-    private class TileVisual extends JComponent {
-        public TileVisual(Point ulCorner) {
-            ulCorner_ = ulCorner;
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            int ulX = ulCorner_.x;
-            int ulY = ulCorner_.y;
-            Rectangle r = new Rectangle(
-                    ulX,
-                    ulY,
-                    vGenerator_.CELL_LENGTH,
-                    vGenerator_.CELL_LENGTH);
-            g2.draw(r);
-            g2.setColor(SPECIAL_COLOR);
-            g2.fill(r);
-        }
-
-        private Point ulCorner_;
     }
 }

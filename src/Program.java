@@ -1,26 +1,19 @@
-import graphics.MazeGenVisual;
-
-import java.awt.Dimension;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import entities.EnemyFactory;
+import entities.GhostFactory;
+import entities.Pacman;
+import graphics.GameVisual;
+import maze.MazeGenerator;
 
 public class Program {
     public static void main(String[] args) {
         int rows = 31;
         int columns = 51;
 
-        JFrame frame = new JFrame("Umi.jpg");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        Dimension contentDimensions = new Dimension(
-            columns * MazeGenVisual.CELL_LENGTH,
-            rows * MazeGenVisual.CELL_LENGTH);
-        frame.getContentPane().setPreferredSize(contentDimensions);
-        frame.pack();
+        MazeGenerator generator = new MazeGenerator(rows, columns);
+        Pacman player = new Pacman(generator, 0, 0);
+        EnemyFactory factory = new GhostFactory(generator, player);
 
-        MazeGenVisual visual = new MazeGenVisual(rows, columns);
-        frame.add(visual);
-        frame.setVisible(true);
-
-        visual.run();
+        GameVisual game = new GameVisual(generator, player, factory, 4, "Umi.jpg");
+        game.run();
     }
 }

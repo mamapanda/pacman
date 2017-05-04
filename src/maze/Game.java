@@ -54,7 +54,6 @@ public abstract class Game {
     /**
      * Clears the maze, generates new goal points,
      * and adds another enemy.
-     * Doesn't actually regenerate the maze.
      */
     public void prepNext() {
         generator().reset();
