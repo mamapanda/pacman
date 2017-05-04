@@ -14,11 +14,13 @@ public class Game {
     public Game(MazeGenerator generator,
                 Pacman player,
                 EnemyFactory enemyFactory) {
+        stepCount_ = 0;
         player_ = player;
         generator_ = generator;
         enemies_ = new ArrayList<>();
         enemyFactory_ = enemyFactory;
 
+        generator().generate();
         enemies().addAll(enemyFactory_.initialBatch());
 
         goalTiles_ = new LinkedList<>();
@@ -39,18 +41,23 @@ public class Game {
             //No error action.
         }
 
-        enemies().forEach(Enemy::move);
-        enemies().forEach(e -> {
-            if (e.collidesWith(player())) {
-                player().die();
-            }
-        });
+        if ((stepCount_ & 1) == 0) {
+            enemies().forEach(Enemy::move);
+            enemies().forEach(e -> {
+                if (e.collidesWith(player())) {
+                    player().die();
+                }
+            });
+        }
 
-        goalTiles().forEach(tile -> {
-            if (tile.equals(player().location())) {
-                goalTiles().remove(tile);
+        for (int i = 0; i < goalTiles().size(); i++) {
+            if (goalTiles().get(i).equals(player().location())) {
+                goalTiles().remove(i);
+                break;
             }
-        });
+        }
+
+        stepCount_++;
     }
 
     /**
@@ -71,6 +78,7 @@ public class Game {
             enemies().get(i).moveToInitialLocation();
         }
         enemies().add(enemyFactory_.make());
+        System.out.println(enemies());
     }
 
     public boolean levelFinished() {
@@ -93,6 +101,7 @@ public class Game {
         return goalTiles_;
     }
 
+    private int stepCount_;
     private Pacman player_;
     private MazeGenerator generator_;
     private List<Enemy> enemies_;

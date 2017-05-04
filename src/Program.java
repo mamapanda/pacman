@@ -33,7 +33,6 @@ public class Program {
         frame.addKeyListener(game);
 
         frame.setVisible(true);
-        System.out.println(game.core().goalTiles());
         game.run();
     }
 }

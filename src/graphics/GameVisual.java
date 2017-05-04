@@ -104,13 +104,14 @@ public class GameVisual extends JLayeredPane implements KeyListener {
             new EntityVisual(
                 core_.enemies().get(core_.enemies().size() - 1),
                 newEnemyIMG,
-                MazeGenVisual.CELL_LENGTH));
+                MazeGenVisual.CELL_LENGTH),
+            Integer.valueOf(15));
         for (int i = 0; i < getComponentCount(); i++) {
             if (getComponent(i) instanceof GoalTileVisual) {
                 remove(i);
             }
         }
-        add(new GoalTileVisual(core_.goalTiles()));
+        add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
     }
 
     private boolean isArrow(KeyEvent e) {

@@ -228,7 +228,7 @@ public class MazeGenerator {
             IntStream.range(yBoundU, yBoundD)
                 .mapToObj(rowPoints::apply)
                 .flatMap(Arrays::stream)
-                .filter(this::contains)
+                .filter(this::hasPathAt)
                 .collect(Collectors.toCollection(LinkedList::new));
 
         Collections.shuffle(availableTiles);
