@@ -59,7 +59,16 @@ public abstract class Game {
     public void prepNext() {
         generator().reset();
         generator().generate();
-        goalTiles_ = generator().generatePoints(goalTiles().size());
+
+        goalTiles().clear();
+        for (Quadrant q : Quadrant.values()) {
+            goalTiles().addAll(generator().generatePoints(1, q));
+        }
+
+        player().moveToInitialLocation();
+        for (int i = 0; i < enemies().size(); i++) {
+            enemies().get(i).moveToInitialLocation();
+        }
         enemies().add(enemyFactory_.make());
     }
 

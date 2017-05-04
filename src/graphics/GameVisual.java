@@ -8,9 +8,8 @@ import maze.Game;
 import maze.MazeGenerator;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.LinkedList;
@@ -66,17 +65,18 @@ public class GameVisual extends Game {
     private MazeGenVisual vGenerator_;
     private EntityVisual vPlayer_;
     private List<EntityVisual> vEnemies_;
+    private static final Color SPECIAL_COLOR = Color.RED;
     private static final int UPDATE_DELAY = 100;
     private static final String PLAYER_IMG = "pacman.gif";
     private static final String[] ENEMY_IMGs = {
-        "redghost.gif", "purpleghost.gif", "blueghost.gif"
+            "redghost.gif", "purpleghost.gif", "blueghost.gif"
     };
 
     private void initFrame() {
         frame_.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Dimension contentDimensions = new Dimension(
-            generator().maze()[0].length * MazeGenVisual.CELL_LENGTH,
-            generator().maze().length * MazeGenVisual.CELL_LENGTH);
+                generator().maze()[0].length * MazeGenVisual.CELL_LENGTH,
+                generator().maze().length * MazeGenVisual.CELL_LENGTH);
         frame_.getContentPane().setPreferredSize(contentDimensions);
         frame_.pack();
 
@@ -93,7 +93,7 @@ public class GameVisual extends Game {
 
         vEnemies_ = new LinkedList<>();
         for (Enemy e : enemies()) {
-            String img = ENEMY_IMGs[(int)(Math.random() * ENEMY_IMGs.length)];
+            String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
             vEnemies_.add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH));
         }
     }
@@ -122,10 +122,33 @@ public class GameVisual extends Game {
             private boolean isArrow(KeyEvent e) {
                 int keycode = e.getKeyCode();
                 return keycode == KeyEvent.VK_UP
-                    || keycode == KeyEvent.VK_DOWN
-                    || keycode == KeyEvent.VK_LEFT
-                    || keycode == KeyEvent.VK_RIGHT;
+                        || keycode == KeyEvent.VK_DOWN
+                        || keycode == KeyEvent.VK_LEFT
+                        || keycode == KeyEvent.VK_RIGHT;
             }
         });
+    }
+
+    private class TileVisual extends JComponent {
+        public TileVisual(Point ulCorner) {
+            ulCorner_ = ulCorner;
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            int ulX = ulCorner_.x;
+            int ulY = ulCorner_.y;
+            Rectangle r = new Rectangle(
+                    ulX,
+                    ulY,
+                    vGenerator_.CELL_LENGTH,
+                    vGenerator_.CELL_LENGTH);
+            g2.draw(r);
+            g2.setColor(SPECIAL_COLOR);
+            g2.fill(r);
+        }
+
+        private Point ulCorner_;
     }
 }

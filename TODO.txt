@@ -1,4 +1,6 @@
 - GameVisual.java
 - Implement graphics.
 
+- Paint goal tiles, enemies, player
+
 - Maybe actually clean up all the replicated code.
