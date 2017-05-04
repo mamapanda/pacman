@@ -1,10 +1,4 @@
 - GameVisual.java
 - Implement graphics.
 
-- GhostFactory.java
-- Complete the make method.
-
-- GhostVisualFactory.java
-- Make it.
-
 - Maybe actually clean up all the replicated code.

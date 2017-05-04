@@ -46,15 +46,21 @@ public class GhostFactory implements EnemyFactory {
     public Enemy make() {
         Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
         Random r = new Random();
-        Quadrant here = quad[r.nextInt(2)];
+        Quadrant here = quad[r.nextInt(2)]; //randomly select quadrant
         int whichEnemy = (int) (Math.random() * 3);
 
+        List<Point> pointArray = maze.generatePoints(1, here);
+        Point points = pointArray.get(0);
+
+        int pointX = (int) points.getX();
+        int pointY = (int) points.getY();
+
         if (whichEnemy == 0) {
-            return new StupidEnemy();
+            return new StupidEnemy(maze, pointX, pointY);
         } else if (whichEnemy == 1) {
-            return new RushEnemy();
+            return new RushEnemy(maze, p, pointX, pointY);
         } else {
-           return new SmartEnemy();
+           return new SmartEnemy(maze, p, pointX, pointY);
         }
     }
 
