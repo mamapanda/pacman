@@ -8,8 +8,8 @@ import java.util.Random;
  * @author Daniel Phan
  */
 public class StupidEnemy extends Enemy {
-    public StupidEnemy(MazeGenerator generator, Pacman target, int x, int y) {
-        super(generator, target, x, y);
+    public StupidEnemy(MazeGenerator generator, int x, int y) {
+        super(generator, x, y);
         rand_ = new Random();
     }
 

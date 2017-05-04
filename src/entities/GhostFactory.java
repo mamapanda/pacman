@@ -32,7 +32,7 @@ public class GhostFactory implements EnemyFactory {
         List<Enemy> initialBatch = new ArrayList<>();
         initialBatch.add(
             new StupidEnemy(
-                maze, p, initialPoints.get(0).x, initialPoints.get(0).y));
+                maze, initialPoints.get(0).x, initialPoints.get(0).y));
         initialBatch.add(
             new RushEnemy(
                 maze, p, initialPoints.get(1).x, initialPoints.get(1).y));
