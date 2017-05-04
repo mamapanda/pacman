@@ -217,17 +217,20 @@ public class MazeGenerator {
     private List<Point> generatePoints(int xBoundL,
                                        int xBoundR,
                                        int yBoundU,
-                                       int yBoundD, int count) {
+                                       int yBoundD,
+                                       int count) {
         Function<Integer, Point[]> rowPoints = x ->
             IntStream.range(xBoundL, xBoundR)
                 .mapToObj(y -> new Point(x, y))
                 .toArray(Point[]::new);
+
         List<Point> availableTiles =
             IntStream.range(yBoundU, yBoundD)
                 .mapToObj(rowPoints::apply)
                 .flatMap(Arrays::stream)
                 .filter(this::contains)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedList::new));
+
         Collections.shuffle(availableTiles);
         return availableTiles.stream()
             .limit(count)
