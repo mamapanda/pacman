@@ -11,15 +11,11 @@ public abstract class Enemy extends MazeEntity {
         target_ = target;
     }
 
-    public void move() {
-        super.move(getMove());
-    }
+    public abstract void move();
 
     public Pacman target() {
         return target_;
     }
-
-    protected abstract Direction getMove();
 
     protected int manhattanDistance(Point p) {
         return Math.abs(p.x - target().x()) + Math.abs(p.y - target().y());

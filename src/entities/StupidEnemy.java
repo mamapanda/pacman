@@ -14,9 +14,10 @@ public class StupidEnemy extends Enemy {
     }
 
     @Override
-    public Direction getMove() {
+    public void move() {
         Direction[] moves = possibleMoves(location());
-        return moves[rand_.nextInt(moves.length)];
+        Direction d = moves[rand_.nextInt(moves.length)];
+        location().translate(d.dx(), d.dy());
     }
 
     private Random rand_;
