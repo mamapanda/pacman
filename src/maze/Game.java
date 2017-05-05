@@ -1,9 +1,11 @@
 package maze;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import entities.Direction;
 import entities.Enemy;
 import entities.EnemyFactory;
 import entities.Pacman;
+import misc.Constants;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -25,9 +27,7 @@ public class Game {
         enemies().addAll(enemyFactory_.initialBatch());
 
         goalTiles_ = new LinkedList<>();
-        for (Quadrant q : Quadrant.values()) {
-            goalTiles().addAll(generator().generatePoints(1, q));
-        }
+        initGoalTiles();
     }
 
     /**
@@ -76,9 +76,7 @@ public class Game {
         generator().generate();
 
         goalTiles().clear();
-        for (Quadrant q : Quadrant.values()) {
-            goalTiles().addAll(generator().generatePoints(1, q));
-        }
+        initGoalTiles();
 
         player().moveToInitialLocation();
         for (int i = 0; i < enemies().size(); i++) {
@@ -120,4 +118,12 @@ public class Game {
     private List<Enemy> enemies_;
     private List<Point> goalTiles_;
     private EnemyFactory enemyFactory_;
+
+    private void initGoalTiles() {
+        for (Quadrant q : Quadrant.values()) {
+            goalTiles().addAll(
+                generator().generatePoints(
+                    Constants.Maze.TILES_PER_QUADRANT, q));
+        }
+    }
 }

@@ -119,31 +119,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     }
 
     private void transitionLevel() {
-        JComponent transition = new JComponent() {
-            @Override
-            public void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setColor(Constants.Transition.BG_COLOR);
-                g2.fill(new Rectangle(
-                    0,
-                    0,
-                    Constants.Graphics.CONTENT_WIDTH,
-                    Constants.Graphics.CONTENT_HEIGHT));
-
-                g2.setFont(Constants.Transition.TEXT_FONT);
-                g2.setColor(Constants.Transition.TEXT_COLOR);
-                String s = String.format("LEVEL %d", core().currentLevel());
-
-                FontMetrics fontMetrics = g2.getFontMetrics();
-                int contentWidth = Constants.Graphics.CONTENT_WIDTH;
-                int stringWidth = fontMetrics.stringWidth(s);
-                int contentHeight = Constants.Graphics.CONTENT_HEIGHT;
-                int stringHeight = fontMetrics.getHeight();
-                int textX = (contentWidth - stringWidth) / 2;
-                int textY = (contentHeight - stringHeight) / 2;
-                g2.drawString(s, textX, textY);
-            }
-        };
+        JComponent transition = new Transition();
 
         add(transition, Integer.valueOf(100));
         revalidate();
@@ -184,5 +160,31 @@ public class GameVisual extends JLayeredPane implements KeyListener {
             }
         }
         return d;
+    }
+
+    private class Transition extends JComponent {
+        @Override
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(Constants.Transition.BG_COLOR);
+            g2.fill(new Rectangle(
+                0,
+                0,
+                Constants.Graphics.CONTENT_WIDTH,
+                Constants.Graphics.CONTENT_HEIGHT));
+
+            g2.setFont(Constants.Transition.TEXT_FONT);
+            g2.setColor(Constants.Transition.TEXT_COLOR);
+            String s = String.format("LEVEL %d", core().currentLevel());
+
+            FontMetrics fontMetrics = g2.getFontMetrics();
+            int contentWidth = Constants.Graphics.CONTENT_WIDTH;
+            int stringWidth = fontMetrics.stringWidth(s);
+            int contentHeight = Constants.Graphics.CONTENT_HEIGHT;
+            int stringHeight = fontMetrics.getHeight() - fontMetrics.getAscent();
+            int textX = (contentWidth - stringWidth) / 2;
+            int textY = (contentHeight - stringHeight) / 2;
+            g2.drawString(s, textX, textY);
+        }
     }
 }
