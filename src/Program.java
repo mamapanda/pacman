@@ -8,12 +8,12 @@ import maze.MazeGenerator;
 
 import javax.swing.*;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
 
 public class Program {
 
     public static void main(String[] args) {
-        do {
-
+        while (true) {
             int rows = 31;
             int columns = 51;
 
@@ -24,11 +24,11 @@ public class Program {
             GameVisual game = new GameVisual(new Game(generator, player, factory));
 
             JFrame frame = new JFrame("Umi.jpg");
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.getContentPane().setPreferredSize(
-                    new Dimension(
-                            generator.maze()[0].length * MazeGenVisual.CELL_LENGTH,
-                            generator.maze().length * MazeGenVisual.CELL_LENGTH));
+                new Dimension(
+                    generator.maze()[0].length * MazeGenVisual.CELL_LENGTH,
+                    generator.maze().length * MazeGenVisual.CELL_LENGTH));
             frame.pack();
 
             frame.add(game);
@@ -37,22 +37,20 @@ public class Program {
             frame.setVisible(true);
             game.run();
 
-            if (JOptionPane.showConfirmDialog(
-                    null,
-                    "Do you wish to continue?",
-                    "Continue?",
-                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
-            {
-                System.exit(0);
+            if (promptContinue()) {
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            } else {
+                break;
             }
-            else
-            {
-                frame.revalidate();
-            }
-
         }
-        while (cont_ = true);
     }
-    private static boolean cont_;
+
+    private static boolean promptContinue() {
+        return JOptionPane.showConfirmDialog(
+            null,
+            "Do you wish to continue?",
+            "Continue?",
+            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+    }
 }
 

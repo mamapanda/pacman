@@ -2,11 +2,8 @@ package entities;
 
 
 import maze.MazeGenerator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.Point;
-import java.util.HashSet;
-import java.util.PriorityQueue;
 
 /**
  * Write a description of class SmartEnemy here.

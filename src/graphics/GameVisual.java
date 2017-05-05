@@ -1,11 +1,11 @@
 package graphics;
 
-import com.sun.org.apache.regexp.internal.REProgram;
 import entities.Direction;
 import entities.Enemy;
 import maze.Game;
 
-import javax.swing.*;
+import javax.swing.JLayeredPane;
+import javax.swing.OverlayLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 

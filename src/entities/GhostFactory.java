@@ -2,7 +2,6 @@ package entities;
 
 import maze.MazeGenerator;
 import maze.Quadrant;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.Point;
 import java.util.ArrayList;
