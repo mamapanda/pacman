@@ -41,6 +41,12 @@ public class Game {
             //No error action.
         }
 
+        enemies().forEach(e -> {
+            if (e.collidesWith(player())) {
+                player().die();
+            }
+        });
+
         if ((stepCount_ & 1) == 0) {
             enemies().forEach(Enemy::move);
             enemies().forEach(e -> {

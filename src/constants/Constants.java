@@ -26,7 +26,7 @@ public class Constants {
 
     public static class Graphics {
         public static final int UPDATE_DELAY = 100;
-        public static final int CELL_SIZE = 20;
+        public static final int CELL_SIZE = 50;
         public static final int CONTENT_WIDTH = Maze.COLUMNS * CELL_SIZE;
         public static final int CONTENT_HEIGHT = Maze.ROWS * CELL_SIZE;
     }

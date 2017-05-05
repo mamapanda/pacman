@@ -45,7 +45,7 @@ public class GhostFactory implements EnemyFactory {
     public Enemy make() {
         Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
         Random r = new Random();
-        Quadrant here = quad[r.nextInt(2)]; //randomly select quadrant
+        Quadrant here = quad[r.nextInt(3)]; //randomly select quadrant
         int whichEnemy = (int) (Math.random() * 3);
 
         List<Point> pointArray = maze.generatePoints(1, here);
