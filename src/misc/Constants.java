@@ -1,4 +1,4 @@
-package constants;
+package misc;
 
 import java.awt.Color;
 import java.awt.Font;

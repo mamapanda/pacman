@@ -1,6 +1,6 @@
 package graphics;
 
-import constants.Constants;
+import misc.Constants;
 
 import javax.swing.JComponent;
 import java.awt.Graphics;

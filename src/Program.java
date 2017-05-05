@@ -1,10 +1,10 @@
-import constants.Constants;
 import entities.EnemyFactory;
 import entities.GhostFactory;
 import entities.Pacman;
 import graphics.GameVisual;
 import maze.Game;
 import maze.MazeGenerator;
+import misc.Constants;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

@@ -1,7 +1,7 @@
 package graphics;
 
-import constants.Constants;
 import maze.MazeGenerator;
+import misc.Constants;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,7 +30,6 @@ public class MazeGenerator {
         }
         maze_ = new boolean[rows][columns];
         stack_ = new LinkedList<>();
-        rand_ = new Random();
 
         Point first = new Point(0, 0);
         stack_.addFirst(first);
@@ -59,7 +56,7 @@ public class MazeGenerator {
         Point[] nexts = nextPoints(start);
 
         if (nexts.length > 0) {
-            Point next = nexts[rand_.nextInt(nexts.length)];
+            Point next = nexts[(int) (Math.random() * nexts.length)];
             makePath(start, next);
             stack_.addFirst(next);
             return true;
@@ -86,7 +83,7 @@ public class MazeGenerator {
                     .filter(p -> !maze()[p.y][p.x])
                     .toArray(Point[]::new);
                 if (paths.length == 1) {
-                    Point newPath = walls[rand_.nextInt(walls.length)];
+                    Point newPath = walls[(int) (Math.random() * walls.length)];
                     maze_[newPath.y][newPath.x] = true;
                     return true;
                 }
@@ -182,7 +179,6 @@ public class MazeGenerator {
 
     private boolean[][] maze_;
     private LinkedList<Point> stack_;
-    private Random rand_;
 
     private void makePath(Point p1, Point p2) {
         Point wall = new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);

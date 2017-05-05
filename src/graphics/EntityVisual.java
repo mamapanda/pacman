@@ -1,7 +1,7 @@
 package graphics;
 
-import constants.Constants;
 import entities.MazeEntity;
+import misc.Constants;
 
 import javax.swing.JComponent;
 import java.awt.Graphics;

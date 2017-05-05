@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class GhostFactory implements EnemyFactory {
@@ -44,8 +43,7 @@ public class GhostFactory implements EnemyFactory {
 
     public Enemy make() {
         Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
-        Random r = new Random();
-        Quadrant here = quad[r.nextInt(3)]; //randomly select quadrant
+        Quadrant here = quad[(int) (Math.random() * 3)]; //randomly select quadrant
         int whichEnemy = (int) (Math.random() * 3);
 
         List<Point> pointArray = maze.generatePoints(1, here);
