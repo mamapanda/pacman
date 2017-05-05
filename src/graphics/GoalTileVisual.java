@@ -1,5 +1,7 @@
 package graphics;
 
+import constants.Constants;
+
 import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -16,15 +18,16 @@ public class GoalTileVisual extends JComponent {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(SPECIAL_COLOR);
-        int add = MazeGenVisual.CELL_LENGTH / 8;
+        g2.setColor(Constants.Colors.SPECIAL);
+        int cellSize = Constants.Graphics.CELL_SIZE;
+        int offset = cellSize / 8;
         for (Point location : goalTiles_) {
             g2.fill(
                 new Rectangle(
-                    (location.x * MazeGenVisual.CELL_LENGTH) + add,
-                    (location.y * MazeGenVisual.CELL_LENGTH) + add,
-                    MazeGenVisual.CELL_LENGTH * 3 / 4,
-                    MazeGenVisual.CELL_LENGTH * 3 / 4));
+                    (location.x * cellSize) + offset,
+                    (location.y * cellSize) + offset,
+                    cellSize * 3 / 4,
+                    cellSize * 3 / 4));
         }
     }
 
@@ -34,5 +37,4 @@ public class GoalTileVisual extends JComponent {
     }
 
     private List<Point> goalTiles_;
-    private final Color SPECIAL_COLOR = Color.RED;
 }

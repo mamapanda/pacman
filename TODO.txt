@@ -1,5 +1,0 @@
-- GameVisual.java
-- Add transition graphics between levels.
-
-- Maybe actually clean up all the replicated code.
-- Maybe add an all variables panel thing.

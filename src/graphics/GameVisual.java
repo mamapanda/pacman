@@ -1,5 +1,6 @@
 package graphics;
 
+import constants.Constants;
 import entities.Direction;
 import entities.Enemy;
 import maze.Game;
@@ -24,7 +25,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         while (true) {
             while (!core_.levelFinished()) {
                 try {
-                    Thread.sleep(UPDATE_DELAY);
+                    Thread.sleep(Constants.Graphics.UPDATE_DELAY);
                 } catch (InterruptedException ignored) {
 
                 }
@@ -71,23 +72,18 @@ public class GameVisual extends JLayeredPane implements KeyListener {
 
     private Game core_;
     private KeyEvent currentArrowEvent_;
-    private static final int UPDATE_DELAY = 100;
-    private static final String PLAYER_IMG = "pacman.gif";
-    private static final String[] ENEMY_IMGs = {
-            "redghost.gif", "purpleghost.gif", "blueghost.gif"
-    };
 
     private void initComponents() {
         MazeGenVisual vGenerator = new MazeGenVisual(core_.generator());
         core_.generator().generate();
         add(vGenerator, Integer.valueOf(0));
-        add(new EntityVisual(core_.player(), PLAYER_IMG, MazeGenVisual.CELL_LENGTH),
+        add(new EntityVisual(core_.player(), Constants.Images.PLAYER),
                 Integer.valueOf(10));
 
+        String[] enemyIMGs = Constants.Images.ENEMIES;
         for (Enemy e : core_.enemies()) {
-            String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
-            add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH),
-                    Integer.valueOf(15));
+            String img = enemyIMGs[(int) (Math.random() * enemyIMGs.length)];
+            add(new EntityVisual(e, img), Integer.valueOf(15));
         }
 
         add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
@@ -100,12 +96,12 @@ public class GameVisual extends JLayeredPane implements KeyListener {
 
         core().prepNext();
 
-        String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
+        String[] enemyIMGs = Constants.Images.ENEMIES;
+        String newEnemyIMG = enemyIMGs[(int) (Math.random() * enemyIMGs.length)];
         add(
                 new EntityVisual(
                         core().enemies().get(core().enemies().size() - 1),
-                        newEnemyIMG,
-                        MazeGenVisual.CELL_LENGTH),
+                        newEnemyIMG),
                 Integer.valueOf(15));
         for (int i = 0; i < getComponentCount(); i++) {
             if (getComponent(i) instanceof GoalTileVisual) {
