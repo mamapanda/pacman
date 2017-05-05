@@ -1,5 +1,4 @@
 - GameVisual.java
-- Make goal tiles not cover up the entire base tile.
 - Add transition graphics between levels.
 
 - Maybe actually clean up all the replicated code.

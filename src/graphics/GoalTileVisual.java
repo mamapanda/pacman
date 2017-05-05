@@ -17,13 +17,14 @@ public class GoalTileVisual extends JComponent {
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(SPECIAL_COLOR);
+        int add = MazeGenVisual.CELL_LENGTH / 8;
         for (Point location : goalTiles_) {
             g2.fill(
                 new Rectangle(
-                    location.x * MazeGenVisual.CELL_LENGTH,
-                    location.y * MazeGenVisual.CELL_LENGTH,
-                    MazeGenVisual.CELL_LENGTH,
-                    MazeGenVisual.CELL_LENGTH));
+                    (location.x * MazeGenVisual.CELL_LENGTH) + add,
+                    (location.y * MazeGenVisual.CELL_LENGTH) + add,
+                    MazeGenVisual.CELL_LENGTH * 3 / 4,
+                    MazeGenVisual.CELL_LENGTH * 3 / 4));
         }
     }
 
