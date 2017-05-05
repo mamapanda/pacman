@@ -12,8 +12,8 @@ public class Constants {
     }
 
     public static class Colors {
-        public static final Color PATH = Color.WHITE;
-        public static final Color WALL = Color.BLACK;
+        public static final Color PATH = Color.BLACK;
+        public static final Color WALL = Color.LIGHT_GRAY;
         public static final Color SPECIAL = Color.RED;
     }
 
