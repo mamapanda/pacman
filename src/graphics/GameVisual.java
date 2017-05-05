@@ -78,7 +78,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
 
     private void initComponents() {
         MazeGenVisual vGenerator = new MazeGenVisual(core_.generator());
-        vGenerator.finish();
+        core_.generator().generate();
         add(vGenerator, Integer.valueOf(0));
         add(new EntityVisual(core_.player(), PLAYER_IMG, MazeGenVisual.CELL_LENGTH),
             Integer.valueOf(10));
@@ -93,16 +93,17 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     }
 
     private void nextLevel() {
-        if (core_.goalTiles().size() != 0) {
+        if (core().goalTiles().size() != 0) {
             throw new IllegalStateException("There are still goal tiles.");
         }
 
-        core_.prepNext();
+        core().prepNext();
 
         String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
+        System.out.println(core().enemies().get(core().enemies().size() - 1));
         add(
             new EntityVisual(
-                core_.enemies().get(core_.enemies().size() - 1),
+                core().enemies().get(core().enemies().size() - 1),
                 newEnemyIMG,
                 MazeGenVisual.CELL_LENGTH),
             Integer.valueOf(15));
@@ -112,6 +113,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
             }
         }
         add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
+        revalidate();
     }
 
     private boolean isArrow(KeyEvent e) {

@@ -1,6 +1,6 @@
 - GameVisual.java
 - Make goal tiles not cover up the entire base tile.
 - Add transition graphics between levels.
-- The enemy visual isn't generating in nextLevel()
 
 - Maybe actually clean up all the replicated code.
+- Maybe add an all variables panel thing.

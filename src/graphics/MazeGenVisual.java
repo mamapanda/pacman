@@ -5,7 +5,6 @@ import maze.MazeGenerator;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
 
@@ -32,25 +31,8 @@ public class MazeGenVisual extends JComponent {
         generator_ = generator;
     }
 
-    /**
-     * Generates the maze and repaints it after each step.
-     */
-    public void run() {
-        while (generator_.step()) {
-            delayedRepaint();
-        }
-        while (generator_.patchDeadEnd()) {
-            delayedRepaint();
-        }
-        delayedRepaint();
-    }
-
-    /**
-     * Generates the maze and repaints it after completion.
-     */
-    public void finish() {
-        generator_.generate();
-        repaint();
+    public MazeGenerator core() {
+        return generator_;
     }
 
     @Override
@@ -70,15 +52,4 @@ public class MazeGenVisual extends JComponent {
     private MazeGenerator generator_;
     private static final Color PATH_COLOR = Color.WHITE;
     private static final Color WALL_COLOR = Color.BLACK;
-    private static final int DRAW_DELAY = 5;
-
-    private void delayedRepaint() {
-        try {
-            Thread.sleep(DRAW_DELAY);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        repaint();
-    }
-
 }
