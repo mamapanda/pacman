@@ -14,7 +14,8 @@ public class Game {
     public Game(MazeGenerator generator,
                 Pacman player,
                 EnemyFactory enemyFactory) {
-        stepCount_ = 0;
+        currentLevel_ = 1;
+        isEnemyMove_ = true;
         player_ = player;
         generator_ = generator;
         enemies_ = new ArrayList<>();
@@ -47,7 +48,7 @@ public class Game {
             }
         });
 
-        if ((stepCount_ & 1) == 0) {
+        if (isEnemyMove_) {
             enemies().forEach(Enemy::move);
             enemies().forEach(e -> {
                 if (e.collidesWith(player())) {
@@ -63,7 +64,7 @@ public class Game {
             }
         }
 
-        stepCount_++;
+        isEnemyMove_ = !isEnemyMove_;
     }
 
     /**
@@ -78,12 +79,18 @@ public class Game {
         for (Quadrant q : Quadrant.values()) {
             goalTiles().addAll(generator().generatePoints(1, q));
         }
-        
+
         player().moveToInitialLocation();
         for (int i = 0; i < enemies().size(); i++) {
             enemies().get(i).moveToInitialLocation();
         }
         enemies().add(enemyFactory_.make());
+
+        currentLevel_++;
+    }
+
+    public int currentLevel() {
+        return currentLevel_;
     }
 
     public boolean levelFinished() {
@@ -106,7 +113,8 @@ public class Game {
         return goalTiles_;
     }
 
-    private int stepCount_;
+    private int currentLevel_;
+    private boolean isEnemyMove_;
     private Pacman player_;
     private MazeGenerator generator_;
     private List<Enemy> enemies_;

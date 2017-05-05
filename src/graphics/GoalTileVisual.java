@@ -3,7 +3,6 @@ package graphics;
 import constants.Constants;
 
 import javax.swing.JComponent;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -18,7 +17,7 @@ public class GoalTileVisual extends JComponent {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Constants.Colors.SPECIAL);
+        g2.setColor(Constants.TileColors.SPECIAL);
         int cellSize = Constants.Graphics.CELL_SIZE;
         int offset = cellSize / 8;
         for (Point location : goalTiles_) {

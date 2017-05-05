@@ -42,8 +42,8 @@ public class MazeGenVisual extends JComponent {
                     cellSize, cellSize);
                 g2.setColor(
                     generator_.maze()[y][x]
-                        ? Constants.Colors.PATH
-                        : Constants.Colors.WALL);
+                        ? Constants.TileColors.PATH
+                        : Constants.TileColors.WALL);
                 g2.fill(cell);
             }
         }
