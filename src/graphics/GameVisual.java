@@ -1,11 +1,11 @@
 package graphics;
 
+import com.sun.org.apache.regexp.internal.REProgram;
 import entities.Direction;
 import entities.Enemy;
 import maze.Game;
 
-import javax.swing.JLayeredPane;
-import javax.swing.OverlayLayout;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -39,6 +39,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         }
     }
 
+
     public Game core() {
         return core_;
     }
@@ -63,7 +64,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         if (currentArrowEvent_ != null
-            && e.getKeyCode() == currentArrowEvent_.getKeyCode()) {
+                && e.getKeyCode() == currentArrowEvent_.getKeyCode()) {
             currentArrowEvent_ = null;
         }
     }
@@ -73,7 +74,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     private static final int UPDATE_DELAY = 100;
     private static final String PLAYER_IMG = "pacman.gif";
     private static final String[] ENEMY_IMGs = {
-        "redghost.gif", "purpleghost.gif", "blueghost.gif"
+            "redghost.gif", "purpleghost.gif", "blueghost.gif"
     };
 
     private void initComponents() {
@@ -81,12 +82,12 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         core_.generator().generate();
         add(vGenerator, Integer.valueOf(0));
         add(new EntityVisual(core_.player(), PLAYER_IMG, MazeGenVisual.CELL_LENGTH),
-            Integer.valueOf(10));
+                Integer.valueOf(10));
 
         for (Enemy e : core_.enemies()) {
             String img = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
             add(new EntityVisual(e, img, MazeGenVisual.CELL_LENGTH),
-                Integer.valueOf(15));
+                    Integer.valueOf(15));
         }
 
         add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
@@ -101,11 +102,11 @@ public class GameVisual extends JLayeredPane implements KeyListener {
 
         String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
         add(
-            new EntityVisual(
-                core().enemies().get(core().enemies().size() - 1),
-                newEnemyIMG,
-                MazeGenVisual.CELL_LENGTH),
-            Integer.valueOf(15));
+                new EntityVisual(
+                        core().enemies().get(core().enemies().size() - 1),
+                        newEnemyIMG,
+                        MazeGenVisual.CELL_LENGTH),
+                Integer.valueOf(15));
         for (int i = 0; i < getComponentCount(); i++) {
             if (getComponent(i) instanceof GoalTileVisual) {
                 remove(i);
@@ -118,9 +119,9 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     private boolean isArrow(KeyEvent e) {
         int keycode = e.getKeyCode();
         return keycode == KeyEvent.VK_UP
-            || keycode == KeyEvent.VK_DOWN
-            || keycode == KeyEvent.VK_LEFT
-            || keycode == KeyEvent.VK_RIGHT;
+                || keycode == KeyEvent.VK_DOWN
+                || keycode == KeyEvent.VK_LEFT
+                || keycode == KeyEvent.VK_RIGHT;
     }
 
     private Direction getPlayerMove() {
