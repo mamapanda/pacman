@@ -100,7 +100,6 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         core().prepNext();
 
         String newEnemyIMG = ENEMY_IMGs[(int) (Math.random() * ENEMY_IMGs.length)];
-        System.out.println(core().enemies().get(core().enemies().size() - 1));
         add(
             new EntityVisual(
                 core().enemies().get(core().enemies().size() - 1),

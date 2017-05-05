@@ -72,13 +72,12 @@ public class Game {
         for (Quadrant q : Quadrant.values()) {
             goalTiles().addAll(generator().generatePoints(1, q));
         }
-
+        
         player().moveToInitialLocation();
         for (int i = 0; i < enemies().size(); i++) {
             enemies().get(i).moveToInitialLocation();
         }
         enemies().add(enemyFactory_.make());
-        System.out.println(enemies());
     }
 
     public boolean levelFinished() {
