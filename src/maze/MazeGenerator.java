@@ -43,8 +43,8 @@ public class MazeGenerator {
      * Fully generates the maze.
      */
     public void generate() {
-        while (step());
-        while (patchDeadEnd());
+        while (step()) ;
+        while (patchDeadEnd()) ;
     }
 
     /**
@@ -122,7 +122,7 @@ public class MazeGenerator {
     public List<Point> generatePoints(int count, Quadrant quadrant) {
         int xBoundL, xBoundR, yBoundU, yBoundD;
 
-        switch(quadrant) {
+        switch (quadrant) {
             case I:
                 xBoundL = 0;
                 xBoundR = maze()[0].length / 2;
@@ -219,14 +219,12 @@ public class MazeGenerator {
                                        int yBoundU,
                                        int yBoundD,
                                        int count) {
-        Function<Integer, Point[]> rowPoints = x ->
-            IntStream.range(xBoundL, xBoundR)
-                .mapToObj(y -> new Point(x, y))
-                .toArray(Point[]::new);
-
         List<Point> availableTiles =
             IntStream.range(yBoundU, yBoundD)
-                .mapToObj(rowPoints::apply)
+                .mapToObj(y ->
+                    IntStream.range(xBoundL, xBoundR)
+                        .mapToObj(x -> new Point(x, y))
+                        .toArray(Point[]::new))
                 .flatMap(Arrays::stream)
                 .filter(this::hasPathAt)
                 .collect(Collectors.toCollection(LinkedList::new));
