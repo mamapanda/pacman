@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AmbushFactory implements EnemyFactory{
+public class AmbushFactory implements EnemyFactory {
     public AmbushFactory(MazeGenerator gen, Pacman target) {
         maze = gen;
         p = target;
@@ -51,7 +51,6 @@ public class AmbushFactory implements EnemyFactory{
     public Enemy make() {
         Quadrant[] quad = {Quadrant.II, Quadrant.III, Quadrant.IV};
         Quadrant here = quad[(int) (Math.random() * 3)]; //randomly select quadrant
-        int whichEnemy = (int) (Math.random() * 4);
 
         List<Point> pointArray = maze.generatePoints(1, here);
         Point points = pointArray.get(0);
@@ -59,15 +58,7 @@ public class AmbushFactory implements EnemyFactory{
         int pointX = (int) points.getX();
         int pointY = (int) points.getY();
 
-        if (whichEnemy == 0) {
-            return new StupidEnemy(maze, pointX, pointY);
-        } else if (whichEnemy == 1) {
-            return new RushEnemy(maze, p, pointX, pointY);
-        } else if (whichEnemy == 2) {
-            return new SmartEnemy(maze, p, pointX, pointY);
-        } else {
-            return new AmbushEnemy(maze, p, pointX, pointY);
-        }
+        return new AmbushEnemy(maze, p, pointX, pointY);
     }
 
     private Pacman p;
