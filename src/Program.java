@@ -1,6 +1,5 @@
 import entities.AmbushFactory;
 import entities.EnemyFactory;
-import entities.GhostFactory;
 import entities.Pacman;
 import graphics.GameVisual;
 import maze.Game;
