@@ -1,9 +1,12 @@
 package maze;
 
+import entities.AdvancedEnemy;
+import entities.AmbushEnemy;
 import entities.Direction;
 import entities.Enemy;
 import entities.EnemyFactory;
 import entities.Pacman;
+import entities.SmartEnemy;
 import misc.Constants;
 
 import java.awt.Point;
@@ -81,7 +84,17 @@ public class Game {
         for (int i = 0; i < enemies().size(); i++) {
             enemies().get(i).moveToInitialLocation();
         }
-        enemies().add(enemyFactory_.make());
+        Enemy newEnemy = enemyFactory_.make();
+        if (newEnemy instanceof AmbushEnemy) {
+            Enemy[] currentEnemies =
+                enemies().stream()
+                    .filter(e -> e instanceof AdvancedEnemy
+                        && !(e instanceof AmbushEnemy))
+                    .toArray(Enemy[]::new);
+            int i = (int) (Math.random() * currentEnemies.length);
+            ((AmbushEnemy) newEnemy).setLeader((AdvancedEnemy) currentEnemies[i]);
+        }
+        enemies().add(newEnemy);
 
         currentLevel_++;
     }

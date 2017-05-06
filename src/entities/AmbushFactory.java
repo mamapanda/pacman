@@ -10,12 +10,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GhostFactory implements EnemyFactory {
-    public GhostFactory(MazeGenerator m, Pacman man) {
-        p = man;
-        maze = m;
+public class AmbushFactory implements EnemyFactory{
+    public AmbushFactory(MazeGenerator gen, Pacman target) {
+        maze = gen;
+        p = target;
     }
 
+    @Override
     public List<Enemy> initialBatch() {
         List<Point> initialPoints =
             Arrays.stream(Quadrant.values())
@@ -29,20 +30,26 @@ public class GhostFactory implements EnemyFactory {
         }
 
         List<Enemy> initialBatch = new ArrayList<>();
-        initialBatch.add(
-            new StupidEnemy(
-                maze, initialPoints.get(0).x, initialPoints.get(0).y));
-        initialBatch.add(
-            new RushEnemy(
-                maze, p, initialPoints.get(1).x, initialPoints.get(1).y));
-        initialBatch.add(
+        SmartEnemy leader =
             new SmartEnemy(
-                maze, p, initialPoints.get(2).x, initialPoints.get(2).y));
+                maze, p, initialPoints.get(2).x, initialPoints.get(2).y);
+        initialBatch.add(
+            new AmbushEnemy(
+                maze, p, initialPoints.get(0).x, initialPoints.get(0).y) {{
+                setLeader(leader);
+            }});
+        initialBatch.add(
+            new AmbushEnemy(
+                maze, p, initialPoints.get(1).x, initialPoints.get(1).y) {{
+                setLeader(leader);
+            }});
+        initialBatch.add(leader);
         return initialBatch;
     }
 
+    @Override
     public Enemy make() {
-        Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
+        Quadrant[] quad = {Quadrant.II, Quadrant.III, Quadrant.IV};
         Quadrant here = quad[(int) (Math.random() * 3)]; //randomly select quadrant
         int whichEnemy = (int) (Math.random() * 4);
 
@@ -66,3 +73,5 @@ public class GhostFactory implements EnemyFactory {
     private Pacman p;
     private MazeGenerator maze;
 }
+
+

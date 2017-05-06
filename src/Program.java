@@ -1,3 +1,4 @@
+import entities.AmbushFactory;
 import entities.EnemyFactory;
 import entities.GhostFactory;
 import entities.Pacman;
@@ -20,7 +21,7 @@ public class Program {
                     Constants.Maze.ROWS,
                     Constants.Maze.COLUMNS);
             Pacman player = new Pacman(generator, 0, 0);
-            EnemyFactory factory = new GhostFactory(generator, player);
+            EnemyFactory factory = new AmbushFactory(generator, player);
 
             GameVisual game = new GameVisual(new Game(generator, player, factory));
 
