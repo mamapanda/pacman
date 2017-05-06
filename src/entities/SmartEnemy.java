@@ -15,7 +15,7 @@ public class SmartEnemy extends AdvancedEnemy {
     public SmartEnemy(MazeGenerator generator, Pacman target, int x, int y) {
         super(generator, target, x, y);
     }
-
+    
     @Override
     protected FScore heuristic(PointNode parent, Point p) {
         return new FScore(parent.gScore() + 1, manhattanDistance(p));

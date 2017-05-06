@@ -24,7 +24,7 @@ public class Program {
 
             GameVisual game = new GameVisual(new Game(generator, player, factory));
 
-            JFrame frame = new JFrame("Umi.jpg");
+            JFrame frame = new JFrame("Umi and Daniel.jpg");
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.getContentPane().setPreferredSize(
                 new Dimension(

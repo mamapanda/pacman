@@ -15,6 +15,11 @@ public abstract class AdvancedEnemy extends Enemy {
     public Pacman target() {
         return target_;
     }
+    
+    public Point targetLocation()
+    {
+        return target_.location();
+    }
 
     @Override
     public void move() {
@@ -36,7 +41,7 @@ public abstract class AdvancedEnemy extends Enemy {
                 continue;
             }
 
-            if (node.value().equals(target().location())) {
+            if (node.value().equals(targetLocation())) {
                 goalNode = node;
                 break;
             }

@@ -1,6 +1,5 @@
 package maze;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import entities.Direction;
 import entities.Enemy;
 import entities.EnemyFactory;

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Random;
 
 public class GhostFactory implements EnemyFactory {
     public GhostFactory(MazeGenerator m, Pacman man) {
@@ -44,8 +45,18 @@ public class GhostFactory implements EnemyFactory {
     public Enemy make() {
         Quadrant[] quad = {Quadrant.II,Quadrant.III,Quadrant.IV};
         Quadrant here = quad[(int) (Math.random() * 3)]; //randomly select quadrant
-        int whichEnemy = (int) (Math.random() * 3);
-
+        int whichEnemy = (int) (Math.random() * 4);
+        int checkEnemy = randGhost(here);
+        int useWhat = (int) (Math.random() * 2);
+        
+        if (whichEnemy != checkEnemy)
+        {
+            if (useWhat == 1)
+            {
+                whichEnemy = checkEnemy;
+            }
+        }
+        
         List<Point> pointArray = maze.generatePoints(1, here);
         Point points = pointArray.get(0);
 
@@ -56,11 +67,21 @@ public class GhostFactory implements EnemyFactory {
             return new StupidEnemy(maze, pointX, pointY);
         } else if (whichEnemy == 1) {
             return new RushEnemy(maze, p, pointX, pointY);
+        } else if (whichEnemy == 2) {
+            return new SmartEnemy(maze, p, pointX, pointY);
         } else {
-           return new SmartEnemy(maze, p, pointX, pointY);
+            return new AmbushEnemy(maze, p, pointX, pointY);
         }
+        
     }
 
     private Pacman p;
     private MazeGenerator maze;
+    
+    private int randGhost(Quadrant q)
+    {
+        Random Honoka = new Random();
+        int rand = Honoka.nextInt(100) + 1;
+        return (rand % 4);
+    }
 }
