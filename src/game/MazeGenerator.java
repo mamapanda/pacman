@@ -1,4 +1,4 @@
-package maze;
+package game;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import java.util.stream.IntStream;
  */
 public class MazeGenerator {
     /**
-     * Constructs a new MazeGenerator that generates a maze
+     * Constructs a new MazeGenerator that generates a game
      * with the given number of rows and columns.
      *
-     * @param rows    the number of rows in the maze (must be odd)
-     * @param columns the number of columns in the maze (must be odd)
+     * @param rows    the number of rows in the game (must be odd)
+     * @param columns the number of columns in the game (must be odd)
      */
     public MazeGenerator(int rows, int columns) {
         if ((rows & columns & 1) == 0) {
@@ -37,7 +37,7 @@ public class MazeGenerator {
     }
 
     /**
-     * Fully generates the maze.
+     * Fully generates the game.
      */
     public void generate() {
         while (step()) ;
@@ -45,7 +45,7 @@ public class MazeGenerator {
     }
 
     /**
-     * Executes the next step of the maze generation.
+     * Executes the next step of the game generation.
      *
      * @return whether there is a next step
      */
@@ -67,7 +67,7 @@ public class MazeGenerator {
     }
 
     /**
-     * Patches the next dead end in the maze.
+     * Patches the next dead end in the game.
      *
      * @return if there are remaining dead ends
      */
@@ -93,7 +93,7 @@ public class MazeGenerator {
     }
 
     /**
-     * Clears the maze generated.
+     * Clears the game generated.
      */
     public void reset() {
         maze_ = new boolean[maze_.length][maze_[0].length];
@@ -106,7 +106,7 @@ public class MazeGenerator {
     }
 
     /**
-     * Generates a number of random points in the maze.
+     * Generates a number of random points in the game.
      * There are no duplicates in the list.
      *
      * @param count the number of points to generate
@@ -151,17 +151,17 @@ public class MazeGenerator {
     }
 
     /**
-     * Checks if a point lies within the maze generated.
+     * Checks if a point lies within the game generated.
      *
      * @param p the point
-     * @return whether or not a point lies in this maze
+     * @return whether or not a point lies in this game
      */
     public boolean contains(Point p) {
         return (p.x | p.y) >= 0 && p.x < maze()[0].length && p.y < maze().length;
     }
 
     /**
-     * Checks if a certain point is an open pathway in the maze.
+     * Checks if a certain point is an open pathway in the game.
      *
      * @param p the point
      * @return idk fam what do you think
@@ -171,7 +171,7 @@ public class MazeGenerator {
     }
 
     /**
-     * @return the maze handled by this generator
+     * @return the game handled by this generator
      */
     public boolean[][] maze() {
         return maze_;

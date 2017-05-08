@@ -1,8 +1,8 @@
 package graphics;
 
 import entities.Direction;
-import entities.Enemy;
-import maze.Game;
+import entities.enemies.Enemy;
+import game.Game;
 import misc.Constants;
 
 import javax.swing.JComponent;

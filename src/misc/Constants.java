@@ -7,10 +7,11 @@ import java.awt.Font;
  * @author Daniel Phan
  */
 public class Constants {
-    public static class Maze {
+    public static class Game {
         public static final int ROWS = 31;
         public static final int COLUMNS = 51;
         public static final int TILES_PER_QUADRANT = 2;
+        public static final int INITIAL_GHOST_COUNT = 3;
     }
 
     public static class TileColors {
@@ -29,8 +30,8 @@ public class Constants {
     public static class Graphics {
         public static final int UPDATE_DELAY = 75;
         public static final int CELL_SIZE = 20;
-        public static final int CONTENT_WIDTH = Maze.COLUMNS * CELL_SIZE;
-        public static final int CONTENT_HEIGHT = Maze.ROWS * CELL_SIZE;
+        public static final int CONTENT_WIDTH = Game.COLUMNS * CELL_SIZE;
+        public static final int CONTENT_HEIGHT = Game.ROWS * CELL_SIZE;
     }
 
     public static class Transition {

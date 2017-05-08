@@ -1,12 +1,11 @@
-package maze;
+package game;
 
-import entities.AdvancedEnemy;
-import entities.AmbushEnemy;
+import entities.enemies.AdvancedEnemy;
+import entities.enemies.AmbushEnemy;
 import entities.Direction;
-import entities.Enemy;
-import entities.EnemyFactory;
+import entities.enemies.Enemy;
+import entities.enemies.factories.EnemyFactory;
 import entities.Pacman;
-import entities.SmartEnemy;
 import misc.Constants;
 
 import java.awt.Point;
@@ -26,7 +25,7 @@ public class Game {
         enemyFactory_ = enemyFactory;
 
         generator().generate();
-        enemies().addAll(enemyFactory_.initialBatch());
+        enemies().addAll(enemyFactory_.);
 
         goalTiles_ = new LinkedList<>();
         initGoalTiles();
@@ -70,7 +69,7 @@ public class Game {
     }
 
     /**
-     * Clears the maze, generates new goal points,
+     * Clears the game, generates new goal points,
      * and adds another enemy.
      */
     public void prepNext() {
@@ -135,7 +134,7 @@ public class Game {
         for (Quadrant q : Quadrant.values()) {
             goalTiles().addAll(
                 generator().generatePoints(
-                    Constants.Maze.TILES_PER_QUADRANT, q));
+                    Constants.Game.TILES_PER_QUADRANT, q));
         }
     }
 }

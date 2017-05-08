@@ -1,4 +1,4 @@
-package maze;
+package game;
 
 public enum Quadrant {
     I,

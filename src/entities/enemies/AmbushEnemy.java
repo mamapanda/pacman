@@ -1,10 +1,11 @@
-package entities;
+package entities.enemies;
 
 
-import maze.MazeGenerator;
+import entities.Pacman;
 import misc.Constants;
 
 import java.awt.Point;
+import java.util.function.Function;
 
 /**
  * An enemy that targets a point twice the vector length of the blinky to pac man plus two vector.
@@ -13,29 +14,25 @@ import java.awt.Point;
  * @version (05 05 17)
  */
 public class AmbushEnemy extends SmartEnemy {
-    public AmbushEnemy(MazeGenerator generator, Pacman target, int x, int y) {
-        super(generator, target, x, y);
-        e = null;
-    }
-
-    public void setLeader(AdvancedEnemy a) {
-        e = a;
+    public AmbushEnemy(int x, int y, AdvancedEnemy leader) {
+        super(x, y);
+        e = leader;
     }
 
     @Override
-    public Point targetLocation() {
+    public void move(Function<Point, Boolean> isPath, Pacman target) {
         int tarX;
         int tarY;
-        Point pacMan = super.targetLocation();
+        Point pacMan = target.location();
         Point smart = e.location();
         int pacX = pacMan.x + 2;
         int pacY = pacMan.y + 2;
         int orientation = 0; // 0 means lower right vector. goes counterclockwise.
 
-        if (pacX >= Constants.Maze.COLUMNS) {
+        if (pacX >= Constants.Game.COLUMNS) {
             pacX -= 4;
         }
-        if (pacY >= Constants.Maze.ROWS) {
+        if (pacY >= Constants.Game.ROWS) {
             pacY -= 4;
         }
 
@@ -64,11 +61,11 @@ public class AmbushEnemy extends SmartEnemy {
             tarY = (2 * dispY) + smart.y;
         }
 
-        if (tarX >= Constants.Maze.COLUMNS) {
-            tarX = Constants.Maze.COLUMNS - 1;
+        if (tarX >= Constants.Game.COLUMNS) {
+            tarX = Constants.Game.COLUMNS - 1;
         }
-        if (tarY >= Constants.Maze.ROWS) {
-            tarY = Constants.Maze.ROWS - 1;
+        if (tarY >= Constants.Game.ROWS) {
+            tarY = Constants.Game.ROWS - 1;
         }
         if (tarX < 0) {
             tarX = 0;
@@ -77,24 +74,19 @@ public class AmbushEnemy extends SmartEnemy {
             tarY = 0;
         }
 
-        if (tarX < Constants.Maze.COLUMNS
-            && tarY < Constants.Maze.ROWS
-            && !generator().maze()[tarY][tarX]) {
-            int flipper = 0;
-            while (tarX < Constants.Maze.COLUMNS
-                && tarY < Constants.Maze.ROWS
-                && !generator().maze()[tarY][tarX]) {
-                if (flipper == 0) {
-                    tarX++;
-                    flipper = 1;
-                } else {
-                    tarY++;
-                    flipper = 0;
-                }
+        Point tar = new Point(tarX, tarY);
+
+        int flipper = 0;
+        while (isPath.apply(tar)) {
+            if (flipper == 0) {
+                tarX++;
+                flipper = 1;
+            } else {
+                tarY++;
+                flipper = 0;
             }
         }
 
-        return new Point(tarX, tarY);
     }
 
     private AdvancedEnemy e;

@@ -1,9 +1,8 @@
-import entities.AmbushFactory;
-import entities.EnemyFactory;
+import entities.enemies.factories.AmbushFactory;
+import entities.enemies.factories.EnemyFactory;
 import entities.Pacman;
 import graphics.GameVisual;
-import maze.Game;
-import maze.MazeGenerator;
+import game.MazeGenerator;
 import misc.Constants;
 
 import javax.swing.JFrame;
@@ -17,12 +16,12 @@ public class Program {
         while (true) {
             MazeGenerator generator =
                 new MazeGenerator(
-                    Constants.Maze.ROWS,
-                    Constants.Maze.COLUMNS);
+                    Constants.Game.ROWS,
+                    Constants.Game.COLUMNS);
             Pacman player = new Pacman(generator, 0, 0);
             EnemyFactory factory = new AmbushFactory(generator, player);
 
-            GameVisual game = new GameVisual(new Game(generator, player, factory));
+            GameVisual game = new GameVisual(new game.Game(generator, player, factory));
 
             JFrame frame = new JFrame("Umi and Daniel.jpg");
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

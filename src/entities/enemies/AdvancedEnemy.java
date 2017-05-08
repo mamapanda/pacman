@@ -1,28 +1,19 @@
-package entities;
+package entities.enemies;
 
-import maze.MazeGenerator;
+import entities.Direction;
+import entities.Pacman;
 
 import java.awt.Point;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.function.Function;
 
 public abstract class AdvancedEnemy extends Enemy {
-    public AdvancedEnemy(MazeGenerator generator, Pacman target, int x, int y) {
-        super(generator, x, y);
-        target_ = target;
+    public AdvancedEnemy(int x, int y) {
+        super(x, y);
     }
 
-    public Pacman target() {
-        return target_;
-    }
-    
-    public Point targetLocation()
-    {
-        return target_.location();
-    }
-
-    @Override
-    public void move() {
+    public void move(Function<Point, Boolean> isPath, Pacman target) {
         PriorityQueue<PointNode> queue = new PriorityQueue<>();
         HashSet<Point> explored = new HashSet<>();
 
@@ -30,7 +21,7 @@ public abstract class AdvancedEnemy extends Enemy {
             new PointNode(
                 null,
                 location(),
-                new FScore(0, manhattanDistance(location()))));
+                new FScore(0, manhattanDistance(location(), target.location()))));
 
         PointNode goalNode = queue.peek();
 
@@ -41,15 +32,15 @@ public abstract class AdvancedEnemy extends Enemy {
                 continue;
             }
 
-            if (node.value().equals(targetLocation())) {
+            if (node.value().equals(target.location())) {
                 goalNode = node;
                 break;
             }
 
-            for (Direction d : possibleMoves(node.value())) {
+            for (Direction d : possibleMoves(isPath, node.value())) {
                 Point tmp = new Point(node.value());
                 tmp.translate(d.dx(), d.dy());
-                queue.add(new PointNode(node, tmp, heuristic(node, tmp)));
+                queue.add(new PointNode(node, tmp, heuristic(node, tmp, target)));
             }
             explored.add(node.value());
         }
@@ -61,10 +52,10 @@ public abstract class AdvancedEnemy extends Enemy {
         setLocation(goalNode.value());
     }
 
-    protected abstract FScore heuristic(PointNode parent, Point p);
+    protected abstract FScore heuristic(PointNode parent, Point p, Pacman target);
 
-    protected int manhattanDistance(Point p) {
-        return Math.abs(p.x - target().x()) + Math.abs(p.y - target().y());
+    protected int manhattanDistance(Point p, Point other) {
+        return Math.abs(p.x - other.x) + Math.abs(p.y - other.y);
     }
 
     protected static class FScore {
@@ -117,6 +108,4 @@ public abstract class AdvancedEnemy extends Enemy {
         private Point value_;
         private FScore score_;
     }
-
-    private Pacman target_;
 }

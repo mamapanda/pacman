@@ -1,6 +1,6 @@
 package graphics;
 
-import maze.MazeGenerator;
+import game.MazeGenerator;
 import misc.Constants;
 
 import java.awt.Graphics;
@@ -9,15 +9,15 @@ import java.awt.Rectangle;
 import javax.swing.JComponent;
 
 /**
- * Graphical maze generation.
+ * Graphical game generation.
  */
 public class MazeGenVisual extends JComponent {
     /**
      * Constructs a new MazeGenVisual with the given number
-     * of rows and columns for the maze
+     * of rows and columns for the game
      *
-     * @param rows    the number of rows in the maze (must be odd)
-     * @param columns the number of columns in the maze (must be odd)
+     * @param rows    the number of rows in the game (must be odd)
+     * @param columns the number of columns in the game (must be odd)
      */
     public MazeGenVisual(int rows, int columns) {
         this(new MazeGenerator(rows, columns));
