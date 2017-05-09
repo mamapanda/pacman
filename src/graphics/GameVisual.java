@@ -14,7 +14,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
 
 /**
  * @author Daniel Phan
@@ -24,12 +23,13 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         setLayout(new OverlayLayout(this));
         core_ = core;
         currentArrowEvent_ = null;
-        initComponents();
     }
 
     public void run() {
         while (true) {
             transitionLevel();
+            initComponents();
+            revalidate();
             while (!core_.levelFinished()) {
                 try {
                     Thread.sleep(Constants.Graphics.UPDATE_DELAY);
@@ -42,7 +42,6 @@ public class GameVisual extends JLayeredPane implements KeyListener {
             if (core_.player().alive()) {
                 removeAll();
                 core_.prepNext();
-                initComponents();
             } else {
                 break;
             }

@@ -1,4 +1,3 @@
-import entities.enemies.factories.AmbushFactory;
 import entities.Pacman;
 import entities.enemies.factories.GhostFactory;
 import game.Game;
@@ -17,7 +16,7 @@ public class Program {
         while (true) {
             Point playerLocation = Constants.Game.PLAYER_START_LOCATION;
             Pacman player = new Pacman(playerLocation.x, playerLocation.y);
-            GameVisual game = new GameVisual(new Game(player, new AmbushFactory()));
+            GameVisual game = new GameVisual(new Game(player, new GhostFactory()));
 
             JFrame frame = new JFrame("Heart to Heart sucks.");
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
