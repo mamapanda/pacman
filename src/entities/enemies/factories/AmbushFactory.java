@@ -15,7 +15,7 @@ public class AmbushFactory implements EnemyFactory {
     public List<Enemy> make(List<Point> locations) {
         AdvancedEnemy leader = new SmartEnemy(locations.get(0).x, locations.get(0).y);
 
-        List<Enemy> ambushes = locations.stream()
+        List<Enemy> ambushes = locations.stream().skip(1)
             .map(location -> new AmbushEnemy(location.x, location.y, leader))
             .collect(Collectors.toCollection(ArrayList::new));
         ambushes.add(leader);

@@ -1,5 +1,4 @@
 import entities.enemies.factories.AmbushFactory;
-import entities.enemies.factories.EnemyFactory;
 import entities.Pacman;
 import entities.enemies.factories.GhostFactory;
 import game.Game;
