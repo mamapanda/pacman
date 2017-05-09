@@ -24,18 +24,23 @@ public class AmbushEnemy extends SmartEnemy {
         Point[] targetLocations = PointGenerator.adjacents(target.location());
         if (Arrays.stream(targetLocations).anyMatch(location()::equals)) {
             setLocation(target.location());
+            return;
         }
 
         Point targetLocation =
             Arrays.stream(targetLocations)
                 .filter(isPath::apply)
                 .sorted((p1, p2) ->
-                    (int) Math.signum(pythagoreanDistance(p1, leader_.location())
-                        - pythagoreanDistance(p2, leader_.location())))
+                    (int) Math.signum(pythagoreanDistance(p2, leader_.location())
+                        - pythagoreanDistance(p1, leader_.location())))
                 .findFirst().orElse(null);
 
         PointNode goalNode = searchMove(location(), targetLocation, isPath, target);
-        while (goalNode.parent() != null && goalNode.parent().parent() != null) {
+        if (goalNode.parent() == null) { //there is no way around
+            super.move(isPath, target);
+            return;
+        }
+        while (goalNode.parent().parent() != null) {
             goalNode = goalNode.parent();
         }
 
