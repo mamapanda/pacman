@@ -2,6 +2,7 @@ package misc;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 
 /**
  * @author Daniel Phan
@@ -12,6 +13,7 @@ public class Constants {
         public static final int COLUMNS = 51;
         public static final int TILES_PER_QUADRANT = 2;
         public static final int INITIAL_GHOST_COUNT = 3;
+        public static final Point PLAYER_START_LOCATION = new Point(0, 0);
     }
 
     public static class TileColors {

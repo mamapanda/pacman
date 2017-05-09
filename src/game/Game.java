@@ -1,7 +1,5 @@
 package game;
 
-import entities.enemies.AdvancedEnemy;
-import entities.enemies.AmbushEnemy;
 import entities.Direction;
 import entities.enemies.Enemy;
 import entities.enemies.factories.EnemyFactory;
@@ -10,25 +8,18 @@ import misc.Constants;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Game {
-    public Game(MazeGenerator generator,
-                Pacman player,
-                EnemyFactory enemyFactory) {
+    public Game(Pacman player, EnemyFactory enemyFactory) {
         currentLevel_ = 1;
-        isEnemyMove_ = true;
         player_ = player;
-        generator_ = generator;
-        enemies_ = new ArrayList<>();
         enemyFactory_ = enemyFactory;
-
-        generator().generate();
-        enemies().addAll(enemyFactory_.);
-
-        goalTiles_ = new LinkedList<>();
-        initGoalTiles();
+        init();
     }
 
     /**
@@ -37,7 +28,7 @@ public class Game {
     public void step(Direction playerMove) {
         try {
             if (playerMove != null) {
-                player().move(playerMove);
+                player().move(maze()::hasPathAt, playerMove);
             }
         } catch (IllegalArgumentException ignored) {
             //No error action.
@@ -50,8 +41,8 @@ public class Game {
         });
 
         if (isEnemyMove_) {
-            enemies().forEach(Enemy::move);
             enemies().forEach(e -> {
+                e.move(maze()::hasPathAt, player());
                 if (e.collidesWith(player())) {
                     player().die();
                 }
@@ -68,50 +59,17 @@ public class Game {
         isEnemyMove_ = !isEnemyMove_;
     }
 
-    /**
-     * Clears the game, generates new goal points,
-     * and adds another enemy.
-     */
     public void prepNext() {
-        generator().reset();
-        generator().generate();
-
-        goalTiles().clear();
-        initGoalTiles();
-
-        player().moveToInitialLocation();
-        for (int i = 0; i < enemies().size(); i++) {
-            enemies().get(i).moveToInitialLocation();
-        }
-        Enemy newEnemy = enemyFactory_.make();
-        if (newEnemy instanceof AmbushEnemy) {
-            Enemy[] currentEnemies =
-                enemies().stream()
-                    .filter(e -> e instanceof AdvancedEnemy
-                        && !(e instanceof AmbushEnemy))
-                    .toArray(Enemy[]::new);
-            int i = (int) (Math.random() * currentEnemies.length);
-            ((AmbushEnemy) newEnemy).setLeader((AdvancedEnemy) currentEnemies[i]);
-        }
-        enemies().add(newEnemy);
-
         currentLevel_++;
-    }
-
-    public int currentLevel() {
-        return currentLevel_;
+        init();
     }
 
     public boolean levelFinished() {
         return !player().alive() || goalTiles().size() == 0;
     }
 
-    public Pacman player() {
-        return player_;
-    }
-
-    public MazeGenerator generator() {
-        return generator_;
+    public int currentLevel() {
+        return currentLevel_;
     }
 
     public List<Enemy> enemies() {
@@ -122,19 +80,54 @@ public class Game {
         return goalTiles_;
     }
 
-    private int currentLevel_;
-    private boolean isEnemyMove_;
-    private Pacman player_;
-    private MazeGenerator generator_;
-    private List<Enemy> enemies_;
-    private List<Point> goalTiles_;
-    private EnemyFactory enemyFactory_;
+    public Maze maze() {
+        return maze_;
+    }
 
-    private void initGoalTiles() {
-        for (Quadrant q : Quadrant.values()) {
-            goalTiles().addAll(
-                generator().generatePoints(
-                    Constants.Game.TILES_PER_QUADRANT, q));
-        }
+    public Pacman player() {
+        return player_;
+    }
+
+    private int currentLevel_;
+    private List<Enemy> enemies_;
+    private EnemyFactory enemyFactory_;
+    private List<Point> goalTiles_;
+    private boolean isEnemyMove_;
+    private Maze maze_;
+    private Pacman player_;
+
+    private void init() {
+        maze_ = new Maze();
+        isEnemyMove_ = true;
+
+        player().setLocation(Constants.Game.PLAYER_START_LOCATION);
+
+        PointGenerator gen = new PointGenerator(maze_);
+        initEnemies(gen);
+        initGoalTiles(gen);
+    }
+
+    private void initEnemies(PointGenerator gen) {
+        int count = Constants.Game.INITIAL_GHOST_COUNT + currentLevel() - 1;
+        Quadrant[] quadrants = Quadrant.values();
+
+        List<Point> locations =
+            IntStream.range(0, count)
+                .mapToObj(i -> quadrants[i % (quadrants.length - 1) + 1])
+                .map(gen::next)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        Collections.shuffle(locations);
+        enemies_ = enemyFactory_.make(locations);
+    }
+
+    private void initGoalTiles(PointGenerator gen) {
+        goalTiles_ = Arrays.stream(Quadrant.values())
+            .flatMap(q ->
+                Collections
+                    .nCopies(Constants.Game.TILES_PER_QUADRANT, q)
+                    .stream())
+            .map(gen::next)
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 }

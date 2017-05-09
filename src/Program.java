@@ -1,29 +1,26 @@
 import entities.enemies.factories.AmbushFactory;
 import entities.enemies.factories.EnemyFactory;
 import entities.Pacman;
+import entities.enemies.factories.GhostFactory;
+import game.Game;
 import graphics.GameVisual;
-import game.MazeGenerator;
 import misc.Constants;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.WindowEvent;
 
 public class Program {
     public static void main(String[] args) {
         while (true) {
-            MazeGenerator generator =
-                new MazeGenerator(
-                    Constants.Game.ROWS,
-                    Constants.Game.COLUMNS);
-            Pacman player = new Pacman(generator, 0, 0);
-            EnemyFactory factory = new AmbushFactory(generator, player);
+            Point playerLocation = Constants.Game.PLAYER_START_LOCATION;
+            Pacman player = new Pacman(playerLocation.x, playerLocation.y);
+            GameVisual game = new GameVisual(new Game(player, new AmbushFactory()));
 
-            GameVisual game = new GameVisual(new game.Game(generator, player, factory));
-
-            JFrame frame = new JFrame("Umi and Daniel.jpg");
+            JFrame frame = new JFrame("Heart to Heart sucks.");
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.getContentPane().setPreferredSize(
                 new Dimension(

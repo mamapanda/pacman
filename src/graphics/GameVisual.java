@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 
 /**
  * @author Daniel Phan
@@ -39,16 +40,13 @@ public class GameVisual extends JLayeredPane implements KeyListener {
                 repaint();
             }
             if (core_.player().alive()) {
-                nextLevel();
+                removeAll();
+                core_.prepNext();
+                initComponents();
             } else {
                 break;
             }
         }
-    }
-
-
-    public Game core() {
-        return core_;
     }
 
     @Override
@@ -80,9 +78,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     private KeyEvent currentArrowEvent_;
 
     private void initComponents() {
-        MazeGenVisual vGenerator = new MazeGenVisual(core_.generator());
-        core_.generator().generate();
-        add(vGenerator, Integer.valueOf(0));
+        add(new MazeVisual(core_.maze()), Integer.valueOf(0));
         add(new EntityVisual(core_.player(), Constants.Images.PLAYER),
             Integer.valueOf(10));
 
@@ -93,29 +89,6 @@ public class GameVisual extends JLayeredPane implements KeyListener {
         }
 
         add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
-    }
-
-    private void nextLevel() {
-        if (core().goalTiles().size() != 0) {
-            throw new IllegalStateException("There are still goal tiles.");
-        }
-
-        core().prepNext();
-
-        String[] enemyIMGs = Constants.Images.ENEMIES;
-        String newEnemyIMG = enemyIMGs[(int) (Math.random() * enemyIMGs.length)];
-        add(
-            new EntityVisual(
-                core().enemies().get(core().enemies().size() - 1),
-                newEnemyIMG),
-            Integer.valueOf(15));
-        for (int i = 0; i < getComponentCount(); i++) {
-            if (getComponent(i) instanceof GoalTileVisual) {
-                remove(i);
-            }
-        }
-        add(new GoalTileVisual(core_.goalTiles()), Integer.valueOf(5));
-        revalidate();
     }
 
     private void transitionLevel() {
@@ -175,7 +148,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
 
             g2.setFont(Constants.Transition.TEXT_FONT);
             g2.setColor(Constants.Transition.TEXT_COLOR);
-            String s = String.format("LEVEL %d", core().currentLevel());
+            String s = String.format("LEVEL %d", core_.currentLevel());
 
             FontMetrics fontMetrics = g2.getFontMetrics();
             int contentWidth = Constants.Graphics.CONTENT_WIDTH;

@@ -1,9 +1,6 @@
 package entities;
 
 import java.awt.Point;
-import java.util.function.Function;
-
-import game.MazeGenerator;
 
 public abstract class MazeEntity {
     /**
@@ -28,7 +25,7 @@ public abstract class MazeEntity {
         return location_;
     }
 
-    protected void setLocation(Point p) {
+    public void setLocation(Point p) {
         location_ = p;
     }
 

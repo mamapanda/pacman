@@ -14,10 +14,6 @@ public class EntityVisual extends JComponent {
         img_ = ImageLoader.load(imgName);
     }
 
-    public MazeEntity core() {
-        return core_;
-    }
-
     public Image image() {
         return img_;
     }
@@ -25,8 +21,8 @@ public class EntityVisual extends JComponent {
     @Override
     public void paintComponent(Graphics g) {
         int cellSize = Constants.Graphics.CELL_SIZE;
-        int x = core().x() * cellSize;
-        int y = core().y() * cellSize;
+        int x = core_.x() * cellSize;
+        int y = core_.y() * cellSize;
 
         Graphics2D g2 = (Graphics2D) g;
         g2.drawImage(image(), x, y, cellSize, cellSize, null);

@@ -10,7 +10,7 @@ public class SmartEnemy extends AdvancedEnemy {
     }
 
     @Override
-    protected FScore heuristic(PointNode parent, Point p, Pacman target) {
-        return new FScore(parent.gScore() + 1, manhattanDistance(p, target.location()));
+    protected FScore heuristic(PointNode parent, Point p, Point end) {
+        return new FScore(parent.gScore() + 1, manhattanDistance(p, end));
     }
 }

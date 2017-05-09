@@ -1,10 +1,10 @@
 package entities.enemies;
 
-
 import entities.Pacman;
-import misc.Constants;
+import game.PointGenerator;
 
 import java.awt.Point;
+import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -16,78 +16,35 @@ import java.util.function.Function;
 public class AmbushEnemy extends SmartEnemy {
     public AmbushEnemy(int x, int y, AdvancedEnemy leader) {
         super(x, y);
-        e = leader;
+        leader_ = leader;
     }
 
     @Override
     public void move(Function<Point, Boolean> isPath, Pacman target) {
-        int tarX;
-        int tarY;
-        Point pacMan = target.location();
-        Point smart = e.location();
-        int pacX = pacMan.x + 2;
-        int pacY = pacMan.y + 2;
-        int orientation = 0; // 0 means lower right vector. goes counterclockwise.
-
-        if (pacX >= Constants.Game.COLUMNS) {
-            pacX -= 4;
-        }
-        if (pacY >= Constants.Game.ROWS) {
-            pacY -= 4;
+        Point[] targetLocations = PointGenerator.adjacents(target.location());
+        if (Arrays.stream(targetLocations).anyMatch(location()::equals)) {
+            setLocation(target.location());
         }
 
-        if (pacMan.x >= smart.x && pacMan.y <= smart.y) {
-            orientation = 1;
-        } else if (pacMan.x <= smart.x && pacMan.y <= smart.y) {
-            orientation = 2;
-        } else if (pacMan.x <= smart.x && pacMan.y > smart.y) {
-            orientation = 3;
+        Point targetLocation =
+            Arrays.stream(targetLocations)
+                .filter(isPath::apply)
+                .sorted((p1, p2) ->
+                    (int) Math.signum(pythagoreanDistance(p1, leader_.location())
+                        - pythagoreanDistance(p2, leader_.location())))
+                .findFirst().orElse(null);
+
+        PointNode goalNode = searchMove(location(), targetLocation, isPath, target);
+        while (goalNode.parent() != null && goalNode.parent().parent() != null) {
+            goalNode = goalNode.parent();
         }
 
-        int dispX = Math.abs(smart.x - pacX);
-        int dispY = Math.abs(smart.y - pacY);
-
-        if (orientation == 1) {
-            tarX = (2 * dispX) + smart.x;
-            tarY = -(2 * dispY) + smart.y;
-        } else if (orientation == 2) {
-            tarX = -(2 * dispX) + smart.x;
-            tarY = -(2 * dispY) + smart.y;
-        } else if (orientation == 3) {
-            tarX = (2 * dispX) + smart.x;
-            tarY = -(2 * dispY) + smart.y;
-        } else {
-            tarX = (2 * dispX) + smart.x;
-            tarY = (2 * dispY) + smart.y;
-        }
-
-        if (tarX >= Constants.Game.COLUMNS) {
-            tarX = Constants.Game.COLUMNS - 1;
-        }
-        if (tarY >= Constants.Game.ROWS) {
-            tarY = Constants.Game.ROWS - 1;
-        }
-        if (tarX < 0) {
-            tarX = 0;
-        }
-        if (tarY < 0) {
-            tarY = 0;
-        }
-
-        Point tar = new Point(tarX, tarY);
-
-        int flipper = 0;
-        while (isPath.apply(tar)) {
-            if (flipper == 0) {
-                tarX++;
-                flipper = 1;
-            } else {
-                tarY++;
-                flipper = 0;
-            }
-        }
-
+        setLocation(goalNode.value());
     }
 
-    private AdvancedEnemy e;
+    protected static double pythagoreanDistance(Point p, Point other) {
+        return Math.sqrt(Math.pow(p.x - other.x, 2) + Math.pow(p.y - other.y, 2));
+    }
+
+    private AdvancedEnemy leader_;
 }
