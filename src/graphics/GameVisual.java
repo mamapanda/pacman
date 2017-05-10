@@ -39,6 +39,7 @@ public class GameVisual extends JLayeredPane implements KeyListener {
                 core_.step(getPlayerMove());
                 repaint();
             }
+            repaint();
             if (core_.player().alive()) {
                 removeAll();
                 core_.prepNext();

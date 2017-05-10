@@ -13,18 +13,18 @@ import java.awt.event.WindowEvent;
 
 public class Program {
     public static void main(String[] args) {
+        JFrame frame = new JFrame("Heart to Heart sucks.");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.getContentPane().setPreferredSize(
+            new Dimension(
+                Constants.Graphics.CONTENT_WIDTH,
+                Constants.Graphics.CONTENT_HEIGHT));
+        frame.pack();
+
         while (true) {
             Point playerLocation = Constants.Game.PLAYER_START_LOCATION;
             Pacman player = new Pacman(playerLocation.x, playerLocation.y);
             GameVisual game = new GameVisual(new Game(player, new GhostFactory()));
-
-            JFrame frame = new JFrame("Heart to Heart sucks.");
-            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            frame.getContentPane().setPreferredSize(
-                new Dimension(
-                    Constants.Graphics.CONTENT_WIDTH,
-                    Constants.Graphics.CONTENT_HEIGHT));
-            frame.pack();
 
             frame.add(game);
             frame.addKeyListener(game);
@@ -35,7 +35,8 @@ public class Program {
             if (!promptContinue()) {
                 break;
             }
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            frame.remove(game);
+            frame.removeKeyListener(game);
         }
     }
 
