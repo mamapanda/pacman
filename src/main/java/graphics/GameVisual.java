@@ -31,15 +31,14 @@ public class GameVisual extends JLayeredPane implements KeyListener {
             initComponents();
             revalidate();
             while (!core_.levelFinished()) {
+                core_.step(getPlayerMove());
+                repaint();
                 try {
                     Thread.sleep(Constants.Graphics.UPDATE_DELAY);
                 } catch (InterruptedException ignored) {
 
                 }
-                core_.step(getPlayerMove());
-                repaint();
             }
-            repaint();
             if (core_.player().alive()) {
                 removeAll();
                 core_.prepNext();

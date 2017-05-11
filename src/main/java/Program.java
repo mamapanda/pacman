@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.WindowEvent;
 
 public class Program {
     public static void main(String[] args) {

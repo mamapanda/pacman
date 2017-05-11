@@ -2,17 +2,16 @@ package graphics;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URL;
 
 public class ImageLoader {
-    public static final String IMG_PATH =
-        new File("package.bluej").exists() ? "../img/" : "img/";
-
     public static BufferedImage load(String imgName) {
         try {
-            return ImageIO.read(new File(IMG_PATH + imgName));
+            URL img = ImageLoader.class.getClassLoader()
+                .getResource("img/" + imgName);
+            return img == null ? null : ImageIO.read(img);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
