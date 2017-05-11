@@ -8,7 +8,7 @@ $OutputDir = "out/Production/Maze"
 if ($Run) {
     java -cp $OutputDir Program
 } elseif ($Jar) {
-    jar cvf pacman.jar -C $OutputDir .
+    jar cvfm jar/pacman.jar manifest.txt -C $OutputDir .
 } else {
     javac `
       src/Program.java `
