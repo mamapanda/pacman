@@ -1,4 +1,5 @@
 param (
+    [Switch]$Jar,
     [Switch]$Run
 )
 
@@ -6,6 +7,8 @@ $OutputDir = "out/Production/Maze"
 
 if ($Run) {
     java -cp $OutputDir Program
+} elseif ($Jar) {
+    jar cvf pacman.jar -C $OutputDir .
 } else {
     javac `
       src/Program.java `
