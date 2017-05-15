@@ -1,6 +1,6 @@
 package entities.enemies;
 
-import entities.Pacman;
+import misc.PointNode;
 
 import java.awt.Point;
 
@@ -10,7 +10,7 @@ public class RushEnemy extends AdvancedEnemy {
     }
 
     @Override
-    protected FScore heuristic(PointNode parent, Point p, Point end) {
-        return new FScore(0, manhattanDistance(p, end));
+    protected PointNode.FScore heuristic(PointNode parent, Point p, Point end) {
+        return new PointNode.FScore(0, manhattanDistance(p, end));
     }
 }

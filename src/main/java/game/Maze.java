@@ -1,8 +1,10 @@
 package game;
 
 import misc.Constants;
+import misc.PointNode;
 
 import java.awt.Point;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,15 +82,44 @@ public class Maze {
                 Point[] paths = Arrays.stream(adjacents)
                     .filter(p -> tiles()[p.y][p.x])
                     .toArray(Point[]::new);
-                Point[] walls = Arrays.stream(adjacents)
-                    .filter(p -> !tiles()[p.y][p.x])
-                    .toArray(Point[]::new);
                 if (paths.length == 1) {
-                    Point newPath = walls[(int) (Math.random() * walls.length)];
-                    tiles_[newPath.y][newPath.x] = true;
+                    Point[] candidates = Arrays.stream(adjacents)
+                        .filter(p -> !tiles()[p.y][p.x])
+                        .map(p -> new Point(2 * p.x - current.x, 2 * p.y - current.y))
+                        .toArray(Point[]::new);
+                    Point p = farthestPath(current, candidates);
+                    tiles_[(p.y + current.y) / 2][(p.x + current.x) / 2] = true;
                 }
             }
         }
+    }
+
+    private Point farthestPath(Point start, Point[] paths) {
+        ArrayDeque<PointNode> queue = new ArrayDeque<>();
+        int[][] pathLengths = new int[Constants.Game.ROWS][Constants.Game.COLUMNS];
+        queue.add(new PointNode(null, start, new PointNode.FScore(1, 0)));
+
+        while (!queue.isEmpty()) {
+            PointNode currentNode = queue.pollFirst();
+            Point current = currentNode.value();
+            if (pathLengths[current.y][current.x] == 0) {
+                continue;
+            }
+            pathLengths[current.y][current.x] = currentNode.score().value();
+            Arrays.stream(PointGenerator.adjacents(current))
+                .filter(this::hasPathAt)
+                .map(p ->
+                    new PointNode(
+                        null,
+                        p,
+                        new PointNode.FScore(
+                            currentNode.score().gScore() + 1,
+                            0)))
+                .forEach(queue::add);
+        }
+        return Arrays.stream(paths)
+            .sorted((p1, p2) -> pathLengths[p2.y][p2.x] - pathLengths[p1.y][p1.x])
+            .findFirst().orElse(null);
     }
 
     private void makePath(Point p1, Point p2) {

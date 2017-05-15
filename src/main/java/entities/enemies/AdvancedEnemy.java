@@ -2,6 +2,7 @@ package entities.enemies;
 
 import entities.Direction;
 import entities.Pacman;
+import misc.PointNode;
 
 import java.awt.Point;
 import java.util.HashSet;
@@ -23,7 +24,7 @@ public abstract class AdvancedEnemy extends Enemy {
         setLocation(goalNode.value());
     }
 
-    protected abstract FScore heuristic(PointNode parent, Point p, Point end);
+    protected abstract PointNode.FScore heuristic(PointNode parent, Point p, Point end);
 
     protected PointNode searchMove(Point start,
                                    Point end,
@@ -32,7 +33,7 @@ public abstract class AdvancedEnemy extends Enemy {
         PriorityQueue<PointNode> queue = new PriorityQueue<>();
         HashSet<Point> explored = new HashSet<>();
 
-        FScore initialScore = new FScore(0, manhattanDistance(start, end));
+        PointNode.FScore initialScore = new PointNode.FScore(0, manhattanDistance(start, end));
         queue.add(new PointNode(null, start, initialScore));
 
         PointNode goalNode = queue.peek();
@@ -61,56 +62,5 @@ public abstract class AdvancedEnemy extends Enemy {
 
     protected int manhattanDistance(Point p, Point other) {
         return Math.abs(p.x - other.x) + Math.abs(p.y - other.y);
-    }
-
-    protected static class FScore {
-        public FScore(int gScore, int hScore) {
-            gScore_ = gScore;
-            hScore_ = hScore;
-        }
-
-        public int value() {
-            return gScore() + hScore();
-        }
-
-        public int gScore() {
-            return gScore_;
-        }
-
-        public int hScore() {
-            return hScore_;
-        }
-
-        private int gScore_;
-        private int hScore_;
-    }
-
-    protected static class PointNode implements Comparable<PointNode> {
-        public PointNode(PointNode parent, Point value, FScore score) {
-            parent_ = parent;
-            value_ = value;
-            score_ = score;
-        }
-
-        public PointNode parent() {
-            return parent_;
-        }
-
-        public Point value() {
-            return value_;
-        }
-
-        public int gScore() {
-            return score_.gScore();
-        }
-
-        @Override
-        public int compareTo(PointNode other) {
-            return score_.value() - other.score_.value();
-        }
-
-        private PointNode parent_;
-        private Point value_;
-        private FScore score_;
     }
 }

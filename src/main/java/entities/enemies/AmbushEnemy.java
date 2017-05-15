@@ -2,6 +2,7 @@ package entities.enemies;
 
 import entities.Pacman;
 import game.PointGenerator;
+import misc.PointNode;
 
 import java.awt.Point;
 import java.util.Arrays;
