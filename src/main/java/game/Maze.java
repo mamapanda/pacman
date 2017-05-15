@@ -88,6 +88,7 @@ public class Maze {
                         .map(p -> new Point(2 * p.x - current.x, 2 * p.y - current.y))
                         .toArray(Point[]::new);
                     Point p = farthestPath(current, candidates);
+                    System.out.println(current);
                     tiles_[(p.y + current.y) / 2][(p.x + current.x) / 2] = true;
                 }
             }
@@ -102,7 +103,7 @@ public class Maze {
         while (!queue.isEmpty()) {
             PointNode currentNode = queue.pollFirst();
             Point current = currentNode.value();
-            if (pathLengths[current.y][current.x] == 0) {
+            if (pathLengths[current.y][current.x] != 0) {
                 continue;
             }
             pathLengths[current.y][current.x] = currentNode.score().value();
