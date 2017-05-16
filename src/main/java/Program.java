@@ -12,39 +12,50 @@ import java.awt.Point;
 
 public class Program {
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Heart to Heart sucks.");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().setPreferredSize(
-            new Dimension(
-                Constants.Graphics.CONTENT_WIDTH,
-                Constants.Graphics.CONTENT_HEIGHT));
-        frame.pack();
+        new Program().run();
+    }
 
+    public Program() {
+        initFrame();
+    }
+
+    public void run() {
         while (true) {
             Point playerLocation = Constants.Game.PLAYER_START_LOCATION;
             Pacman player = new Pacman(playerLocation.x, playerLocation.y);
             GameVisual game = new GameVisual(new Game(player, new GhostFactory()));
 
-            frame.add(game);
-            frame.addKeyListener(game);
+            frame_.add(game);
+            frame_.addKeyListener(game);
 
-            frame.setVisible(true);
+            frame_.setVisible(true);
             game.run();
 
             if (!promptContinue()) {
                 break;
             }
-            frame.remove(game);
-            frame.removeKeyListener(game);
+            frame_.remove(game);
+            frame_.removeKeyListener(game);
         }
     }
 
-    private static boolean promptContinue() {
+    private JFrame frame_;
+
+    private void initFrame() {
+        frame_ = new JFrame("pecman");
+        frame_.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame_.getContentPane().setPreferredSize(
+            new Dimension(
+                Constants.Graphics.CONTENT_WIDTH,
+                Constants.Graphics.CONTENT_HEIGHT));
+        frame_.pack();
+    }
+
+    private boolean promptContinue() {
         return JOptionPane.showConfirmDialog(
-            null,
+            frame_,
             "Do you wish to continue?",
             "Continue?",
             JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 }
-
