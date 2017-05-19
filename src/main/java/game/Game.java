@@ -40,13 +40,14 @@ public class Game {
             }
         });
 
-        if (isEnemyMove_) {
+        if (ghostN_ % Constants.Game.GHOST_UPDATE_N == 0) {
             enemies().forEach(e -> {
                 e.move(maze()::hasPathAt, player());
                 if (e.collidesWith(player())) {
                     player().die();
                 }
             });
+            ghostN_ = 0;
         }
 
         for (int i = 0; i < goalTiles().size(); i++) {
@@ -56,7 +57,7 @@ public class Game {
             }
         }
 
-        isEnemyMove_ = !isEnemyMove_;
+        ghostN_++;
     }
 
     public void prepNext() {
@@ -92,13 +93,13 @@ public class Game {
     private List<Enemy> enemies_;
     private EnemyFactory enemyFactory_;
     private List<Point> goalTiles_;
-    private boolean isEnemyMove_;
+    private int ghostN_;
     private Maze maze_;
     private Pacman player_;
 
     private void init() {
         maze_ = new Maze();
-        isEnemyMove_ = true;
+        ghostN_ = 0;
 
         player().setLocation(Constants.Game.PLAYER_START_LOCATION);
 

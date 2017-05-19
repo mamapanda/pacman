@@ -8,10 +8,13 @@ import misc.Constants;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.OverlayLayout;
+import javax.swing.Timer;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -26,19 +29,32 @@ public class GameVisual extends JLayeredPane implements KeyListener {
     }
 
     public void run() {
+        Timer timer = new Timer(Constants.Graphics.UPDATE_DELAY, null);
+        timer.addActionListener(new ActionListener() {
+            boolean delayedEnd = false;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (delayedEnd && core_.levelFinished()) {
+                    timer.stop();
+                    delayedEnd = false;
+                } else if (core_.levelFinished()) {
+                    delayedEnd = true;
+                } else {
+                    core_.step(getPlayerMove());
+                    repaint();
+                }
+            }
+        });
+
         while (true) {
             transitionLevel();
             initComponents();
             revalidate();
-            while (!core_.levelFinished()) {
-                core_.step(getPlayerMove());
-                repaint();
-                try {
-                    Thread.sleep(Constants.Graphics.UPDATE_DELAY);
-                } catch (InterruptedException ignored) {
 
-                }
-            }
+            timer.restart();
+            while (timer.isRunning());
+
             if (core_.player().alive()) {
                 removeAll();
                 core_.prepNext();
