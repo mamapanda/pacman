@@ -1,4 +1,4 @@
-let maze: GMaze = new GMaze(21, 21, 30);
+let maze: Graphics.GMaze = new Graphics.GMaze(21, 21, 30);
 let canvas: HTMLCanvasElement =
     <HTMLCanvasElement>document.getElementById("game-canvas");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
