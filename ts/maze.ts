@@ -1,37 +1,90 @@
 namespace Maze {
     export class Point {
-        public x: number;
-        public y: number;
+        public row: number;
+        public column: number;
 
-        public constructor(x: number, y: number) {
-            this.x = x;
-            this.y = y;
+        public constructor(row: number, column: number) {
+            this.row = row;
+            this.column = column;
+        }
+
+        public adjacents(): Point[] {
+            return [
+                new Point(this.row - 1, this.column),
+                new Point(this.row + 1, this.column),
+                new Point(this.row, this.column - 1),
+                new Point(this.row, this.column + 1)
+            ];
+        }
+
+        public equals = (other: Point): boolean => {
+            return this.row == other.row && this.column == other.column;
         }
     }
 
     export class Maze {
-        public readonly width: number;
-        public readonly height: number;
+        public readonly rows: number;
+        public readonly columns: number;
 
-        public constructor(width: number, height: number) {
-            this.width = width;
-            this.height = height;
+        public constructor(rows: number, columns: number) {
+            this.rows = rows;
+            this.columns = columns;
         }
 
         public contains(p: Point): boolean {
-            return p.x >= 0 && p.x < this.width && p.y >= 0 && p.y < this.height;
+            return p.row >= 0 && p.row < this.rows &&
+                p.column >= 0 && p.column < this.columns;
         }
 
-        public pathAt(p: Point): boolean {
-            return this.contains(p) && this.tiles[p.y][p.x];
+        public pathAt = (p: Point): boolean => {
+            return this.contains(p) && this.tiles[p.row][p.column];
         }
 
-        public generatePaths(): void {
+        public generate(): void {
+            this.resetTiles();
+            this.generatePaths();
+            this.patchDeadEnds();
+        }
+
+        private tiles: boolean[][];
+
+        private resetTiles(): void {
+            this.tiles = []
+            for (let row: number = 0; row < this.rows; ++row) {
+                this.tiles[row] = [];
+                for (let col: number = 0; col < this.columns; ++col) {
+                    this.tiles[row][col] = false;
+                }
+            }
+        }
+
+        private unbuiltPaths(p: Point): Point[] {
+            let paths: Point[] = [
+                new Point(p.row - 2, p.column),
+                new Point(p.row + 2, p.column),
+                new Point(p.row, p.column - 2),
+                new Point(p.row, p.column + 2)
+            ];
+            return paths.filter(point =>
+                this.contains(point) && !this.pathAt(point));
+        }
+
+        private makePath(start: Point, end: Point): void {
+            let wall: Point = new Point(
+                Math.floor((start.row + end.row) / 2),
+                Math.floor((start.column + end.column) / 2)
+            );
+
+            this.tiles[start.row][start.column] = true;
+            this.tiles[wall.row][wall.column] = true;
+            this.tiles[end.row][end.column] = true;
+        }
+
+        private generatePaths(): void {
             let start: Point = new Point(0, 0);
             let stack: Point[] = [start];
 
-            this.resetTiles();
-            this.tiles[start.y][start.x] = true;
+            this.tiles[start.row][start.column] = true;
 
             while (stack.length > 0) {
                 let current: Point = stack[stack.length - 1];
@@ -48,38 +101,60 @@ namespace Maze {
             }
         }
 
-        private tiles: boolean[][];
+        private pathDistance(start: Point, end: Point): number {
+            if (!this.pathAt(start) || !(this.pathAt(end))) {
+                return -1;
+            }
 
-        private resetTiles(): void {
-            this.tiles = []
-            for (let row: number = 0; row < this.height; ++row) {
-                this.tiles[row] = [];
-                for (let col: number = 0; col < this.width; ++col) {
-                    this.tiles[row][col] = false;
+            let queue: [Point, number][] = [[start, 0]];
+            let visited: Point[] = [];
+
+            while (queue.length > 0) {
+                let point: Point, distance: number;
+                [point, distance] = queue.shift();
+
+                if (point.equals(end)) {
+                    return distance;
                 }
+
+                for (let neighbor of point.adjacents().filter(this.pathAt)) {
+                    if (!visited.some(neighbor.equals)) {
+                        queue.push([neighbor, distance + 1]);
+                    }
+                }
+
+                visited.push(point);
             }
         }
 
-        private unbuiltPaths(p: Point): Point[] {
-            let paths: Point[] = [
-                new Point(p.x - 2, p.y),
-                new Point(p.x + 2, p.y),
-                new Point(p.x, p.y - 2),
-                new Point(p.x, p.y + 2)
-            ];
-            return paths.filter(point =>
-                this.contains(point) && !this.pathAt(point));
+        private farthestPoint(start: Point, points: Point[]): Point {
+            let distances: [Point, number][] = points.map(
+                p => [p, this.pathDistance(start, p)] as [Point, number]);
+            return distances.sort((lhs, rhs) => rhs[1] - lhs[1])[0][0];
         }
 
-        private makePath(start: Point, end: Point): void {
-            let wall: Point = new Point(
-                Math.floor((start.x + end.x) / 2),
-                Math.floor((start.y + end.y) / 2)
-            );
+        private deadEndAt(point: Point): boolean {
+            let adjacentPaths: Point[] = point.adjacents().filter(this.pathAt);
+            return adjacentPaths.length == 1;
+        }
 
-            this.tiles[start.y][start.x] = true;
-            this.tiles[wall.y][wall.x] = true;
-            this.tiles[end.y][end.x] = true;
+        private patchDeadEnds(): void {
+            for (let row: number = 0; row < this.rows; row += 2) {
+                for (let col: number = 0; col < this.columns; col += 2) {
+                    let point: Point = new Point(row, col);
+
+                    if (this.deadEndAt(point)) {
+                        let candidates: Point[] = [
+                            new Point(point.row - 2, point.column),
+                            new Point(point.row + 2, point.column),
+                            new Point(point.row, point.column - 2),
+                            new Point(point.row, point.column + 2)
+                        ].filter(this.pathAt);
+
+                        this.makePath(point, this.farthestPoint(point, candidates));
+                    }
+                }
+            }
         }
     }
 }

@@ -7,11 +7,11 @@ var Graphics;
 (function (Graphics) {
     var GMaze = (function (_super) {
         __extends(GMaze, _super);
-        function GMaze(width, height, tileWidth) {
-            var _this = _super.call(this, width, height) || this;
+        function GMaze(rows, columns, tileWidth) {
+            var _this = _super.call(this, rows, columns) || this;
             _this.tileWidth = tileWidth;
-            _this.pathColor = "black";
-            _this.wallColor = "dimgray";
+            _this.pathColor = "";
+            _this.wallColor = "";
             return _this;
         }
         GMaze.prototype.setColors = function (pathColor, wallColor) {
@@ -19,8 +19,8 @@ var Graphics;
             this.wallColor = wallColor;
         };
         GMaze.prototype.draw = function (ctx) {
-            for (var row = 0; row < this.height; ++row) {
-                for (var col = 0; col < this.width; ++col) {
+            for (var row = 0; row < this.rows; ++row) {
+                for (var col = 0; col < this.columns; ++col) {
                     var path = this.pathAt(new Maze.Point(row, col));
                     var color = path ? this.pathColor : this.wallColor;
                     var x = col * this.tileWidth;

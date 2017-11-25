@@ -8,11 +8,11 @@ namespace Graphics {
         public wallColor: string;
         public readonly tileWidth: number;
 
-        public constructor(width: number, height: number, tileWidth: number) {
-            super(width, height);
+        public constructor(rows: number, columns: number, tileWidth: number) {
+            super(rows, columns);
             this.tileWidth = tileWidth;
-            this.pathColor = "black";
-            this.wallColor = "dimgray";
+            this.pathColor = "";
+            this.wallColor = "";
         }
 
         public setColors(pathColor: string, wallColor: string): void {
@@ -21,8 +21,8 @@ namespace Graphics {
         }
 
         public draw(ctx: CanvasRenderingContext2D): void {
-            for (let row: number = 0; row < this.height; ++row) {
-                for (let col: number = 0; col < this.width; ++col) {
+            for (let row: number = 0; row < this.rows; ++row) {
+                for (let col: number = 0; col < this.columns; ++col) {
                     let path: boolean = this.pathAt(new Maze.Point(row, col));
                     let color: string = path ? this.pathColor : this.wallColor;
                     let x: number = col * this.tileWidth;
