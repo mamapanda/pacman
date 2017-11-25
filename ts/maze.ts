@@ -1,4 +1,4 @@
-export class Point {
+class Point {
     public x: number;
     public y: number;
 
@@ -8,7 +8,7 @@ export class Point {
     }
 }
 
-export class Maze {
+class Maze {
     public readonly width: number;
     public readonly height: number;
 
@@ -28,9 +28,10 @@ export class Maze {
     public generatePaths(): void {
         let start: Point = new Point(0, 0);
         let stack: Point[] = [start];
-        this.tiles[start.y][start.x] = true;
 
         this.resetTiles();
+        this.tiles[start.y][start.x] = true;
+
         while (stack.length > 0) {
             let current: Point = stack[stack.length - 1];
             let nexts: Point[] = this.unbuiltPaths(current);
@@ -50,9 +51,9 @@ export class Maze {
 
     private resetTiles(): void {
         this.tiles = []
-        for (let row: number = 0; row < this.width; ++row) {
+        for (let row: number = 0; row < this.height; ++row) {
             this.tiles[row] = [];
-            for (let col: number = 0; col < this.height; ++col) {
+            for (let col: number = 0; col < this.width; ++col) {
                 this.tiles[row][col] = false;
             }
         }

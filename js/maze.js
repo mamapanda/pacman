@@ -1,4 +1,3 @@
-"use strict";
 var Point = (function () {
     function Point(x, y) {
         this.x = x;
@@ -6,7 +5,6 @@ var Point = (function () {
     }
     return Point;
 }());
-exports.Point = Point;
 var Maze = (function () {
     function Maze(width, height) {
         this.width = width;
@@ -21,8 +19,8 @@ var Maze = (function () {
     Maze.prototype.generatePaths = function () {
         var start = new Point(0, 0);
         var stack = [start];
-        this.tiles[start.y][start.x] = true;
         this.resetTiles();
+        this.tiles[start.y][start.x] = true;
         while (stack.length > 0) {
             var current = stack[stack.length - 1];
             var nexts = this.unbuiltPaths(current);
@@ -39,9 +37,9 @@ var Maze = (function () {
     };
     Maze.prototype.resetTiles = function () {
         this.tiles = [];
-        for (var row = 0; row < this.width; ++row) {
+        for (var row = 0; row < this.height; ++row) {
             this.tiles[row] = [];
-            for (var col = 0; col < this.height; ++col) {
+            for (var col = 0; col < this.width; ++col) {
                 this.tiles[row][col] = false;
             }
         }
@@ -66,4 +64,3 @@ var Maze = (function () {
     };
     return Maze;
 }());
-exports.Maze = Maze;
