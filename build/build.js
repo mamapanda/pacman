@@ -207,23 +207,21 @@ var Entity;
 })(Entity || (Entity = {}));
 var Graphics;
 (function (Graphics) {
-    var GMaze = (function (_super) {
-        __extends(GMaze, _super);
-        function GMaze(rows, columns, tileWidth) {
-            var _this = _super.call(this, rows, columns) || this;
-            _this.tileWidth = tileWidth;
-            _this.pathColor = "";
-            _this.wallColor = "";
-            return _this;
+    var GMaze = (function () {
+        function GMaze(base, tileWidth) {
+            this.base = base;
+            this.tileWidth = tileWidth;
+            this.pathColor = "";
+            this.wallColor = "";
         }
         GMaze.prototype.setColors = function (pathColor, wallColor) {
             this.pathColor = pathColor;
             this.wallColor = wallColor;
         };
         GMaze.prototype.draw = function (ctx) {
-            for (var row = 0; row < this.rows; ++row) {
-                for (var col = 0; col < this.columns; ++col) {
-                    var path = this.pathAt(new Maze.Point(row, col));
+            for (var row = 0; row < this.base.rows; ++row) {
+                for (var col = 0; col < this.base.columns; ++col) {
+                    var path = this.base.pathAt(new Maze.Point(row, col));
                     var color = path ? this.pathColor : this.wallColor;
                     var x = col * this.tileWidth;
                     var y = row * this.tileWidth;
@@ -233,39 +231,37 @@ var Graphics;
             }
         };
         return GMaze;
-    }(Maze.Maze));
+    }());
     Graphics.GMaze = GMaze;
-    var GPacman = (function (_super) {
-        __extends(GPacman, _super);
-        function GPacman(location, image, width) {
-            var _this = _super.call(this, location) || this;
-            _this.image = new Image();
-            _this.image.src = image;
-            _this.width = width;
-            return _this;
+    var GEntity = (function () {
+        function GEntity(base, imagePath, width) {
+            this.base = base;
+            this.image = new Image();
+            this.image.src = imagePath;
+            this.width = width;
         }
-        GPacman.prototype.draw = function (ctx) {
+        GEntity.prototype.draw = function (ctx) {
             var _this = this;
             if (this.image.complete) {
-                var x = this.location.column * this.width;
-                var y = this.location.row * this.width;
+                var x = this.base.location.column * this.width;
+                var y = this.base.location.row * this.width;
                 ctx.drawImage(this.image, x, y, this.width, this.width);
             }
             else {
                 this.image.onload = function () { return _this.draw(ctx); };
             }
         };
-        return GPacman;
-    }(Entity.Pacman));
-    Graphics.GPacman = GPacman;
+        return GEntity;
+    }());
+    Graphics.GEntity = GEntity;
 })(Graphics || (Graphics = {}));
-var maze = new Graphics.GMaze(29, 49, 20);
+var gMaze = new Graphics.GMaze(new Maze.Maze(29, 49), 20);
 var canvas = document.getElementById("game-canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = maze.columns * maze.tileWidth;
-canvas.height = maze.rows * maze.tileWidth;
-maze.setColors("black", "dimgray");
-maze.generate();
-maze.draw(ctx);
-var pacman = new Graphics.GPacman(new Maze.Point(0, 0), "img/pacman.gif", 20);
-pacman.draw(ctx);
+canvas.width = gMaze.base.columns * gMaze.tileWidth;
+canvas.height = gMaze.base.rows * gMaze.tileWidth;
+gMaze.base.generate();
+gMaze.setColors("black", "dimgray");
+gMaze.draw(ctx);
+var gPacman = new Graphics.GEntity(new Entity.Pacman(new Maze.Point(0, 0)), "img/pacman.gif", 20);
+gPacman.draw(ctx);

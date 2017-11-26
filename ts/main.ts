@@ -1,18 +1,21 @@
-let maze: Graphics.GMaze = new Graphics.GMaze(29, 49, 20);
+let gMaze: Graphics.GMaze = new Graphics.GMaze(
+    new Maze.Maze(29, 49), 20
+);
 let canvas: HTMLCanvasElement =
     <HTMLCanvasElement>document.getElementById("game-canvas");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
 
-canvas.width = maze.columns * maze.tileWidth;
-canvas.height = maze.rows * maze.tileWidth;
+canvas.width = gMaze.base.columns * gMaze.tileWidth;
+canvas.height = gMaze.base.rows * gMaze.tileWidth;
 
-maze.setColors("black", "dimgray");
-maze.generate();
-maze.draw(ctx);
+gMaze.base.generate();
+gMaze.setColors("black", "dimgray");
+gMaze.draw(ctx);
 
-let pacman: Graphics.GPacman = new Graphics.GPacman(
-    new Maze.Point(0, 0),
+let gPacman: Graphics.GEntity = new Graphics.GEntity(
+    new Entity.Pacman(new Maze.Point(0, 0)),
     "img/pacman.gif",
     20
 );
-pacman.draw(ctx);
+
+gPacman.draw(ctx);

@@ -7,6 +7,8 @@ namespace Entity {
     }
 
     export class Entity {
+        public location: Maze.Point;
+
         public constructor(location: Maze.Point) {
             this.location = location;
         }
@@ -14,8 +16,6 @@ namespace Entity {
         public collidesWith(other: Entity): boolean {
             return this.location.equals(other.location);
         }
-
-        protected location: Maze.Point;
     }
 
     export class Pacman extends Entity {
