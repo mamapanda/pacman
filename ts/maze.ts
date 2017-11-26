@@ -17,7 +17,7 @@ namespace Maze {
             ];
         }
 
-        public equals = (other: Point): boolean => {
+        public equals(other: Point): boolean {
             return this.row == other.row && this.column == other.column;
         }
     }
@@ -36,7 +36,7 @@ namespace Maze {
                 p.column >= 0 && p.column < this.columns;
         }
 
-        public pathAt = (p: Point): boolean => {
+        public pathAt(p: Point): boolean {
             return this.contains(p) && this.tiles[p.row][p.column];
         }
 
@@ -117,8 +117,8 @@ namespace Maze {
                     return distance;
                 }
 
-                for (let neighbor of point.adjacents().filter(this.pathAt)) {
-                    if (!visited.some(neighbor.equals)) {
+                for (let neighbor of point.adjacents().filter(p => this.pathAt(p))) {
+                    if (!visited.some(p => neighbor.equals(p))) {
                         queue.push([neighbor, distance + 1]);
                     }
                 }
@@ -134,7 +134,8 @@ namespace Maze {
         }
 
         private deadEndAt(point: Point): boolean {
-            let adjacentPaths: Point[] = point.adjacents().filter(this.pathAt);
+            let adjacentPaths: Point[] = point.adjacents()
+                .filter(p => this.pathAt(p));
             return adjacentPaths.length == 1;
         }
 
@@ -149,7 +150,7 @@ namespace Maze {
                             new Point(point.row + 2, point.column),
                             new Point(point.row, point.column - 2),
                             new Point(point.row, point.column + 2)
-                        ].filter(this.pathAt);
+                        ].filter(p => this.pathAt(p));
 
                         this.makePath(point, this.farthestPoint(point, candidates));
                     }

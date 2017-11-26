@@ -2,10 +2,6 @@ var Maze;
 (function (Maze_1) {
     var Point = (function () {
         function Point(row, column) {
-            var _this = this;
-            this.equals = function (other) {
-                return _this.row == other.row && _this.column == other.column;
-            };
             this.row = row;
             this.column = column;
         }
@@ -17,21 +13,23 @@ var Maze;
                 new Point(this.row, this.column + 1)
             ];
         };
+        Point.prototype.equals = function (other) {
+            return this.row == other.row && this.column == other.column;
+        };
         return Point;
     }());
     Maze_1.Point = Point;
     var Maze = (function () {
         function Maze(rows, columns) {
-            var _this = this;
-            this.pathAt = function (p) {
-                return _this.contains(p) && _this.tiles[p.row][p.column];
-            };
             this.rows = rows;
             this.columns = columns;
         }
         Maze.prototype.contains = function (p) {
             return p.row >= 0 && p.row < this.rows &&
                 p.column >= 0 && p.column < this.columns;
+        };
+        Maze.prototype.pathAt = function (p) {
+            return this.contains(p) && this.tiles[p.row][p.column];
         };
         Maze.prototype.generate = function () {
             this.resetTiles();
@@ -84,6 +82,7 @@ var Maze;
             }
         };
         Maze.prototype.pathDistance = function (start, end) {
+            var _this = this;
             if (!this.pathAt(start) || !(this.pathAt(end))) {
                 return -1;
             }
@@ -95,11 +94,14 @@ var Maze;
                 if (point.equals(end)) {
                     return distance;
                 }
-                for (var _i = 0, _b = point.adjacents().filter(this.pathAt); _i < _b.length; _i++) {
-                    var neighbor = _b[_i];
-                    if (!visited.some(neighbor.equals)) {
+                var _loop_1 = function (neighbor) {
+                    if (!visited.some(function (p) { return neighbor.equals(p); })) {
                         queue.push([neighbor, distance + 1]);
                     }
+                };
+                for (var _i = 0, _b = point.adjacents().filter(function (p) { return _this.pathAt(p); }); _i < _b.length; _i++) {
+                    var neighbor = _b[_i];
+                    _loop_1(neighbor);
                 }
                 visited.push(point);
             }
@@ -111,10 +113,13 @@ var Maze;
             return distances.sort(function (lhs, rhs) { return rhs[1] - lhs[1]; })[0][0];
         };
         Maze.prototype.deadEndAt = function (point) {
-            var adjacentPaths = point.adjacents().filter(this.pathAt);
+            var _this = this;
+            var adjacentPaths = point.adjacents()
+                .filter(function (p) { return _this.pathAt(p); });
             return adjacentPaths.length == 1;
         };
         Maze.prototype.patchDeadEnds = function () {
+            var _this = this;
             for (var row = 0; row < this.rows; row += 2) {
                 for (var col = 0; col < this.columns; col += 2) {
                     var point = new Point(row, col);
@@ -124,7 +129,7 @@ var Maze;
                             new Point(point.row + 2, point.column),
                             new Point(point.row, point.column - 2),
                             new Point(point.row, point.column + 2)
-                        ].filter(this.pathAt);
+                        ].filter(function (p) { return _this.pathAt(p); });
                         this.makePath(point, this.farthestPoint(point, candidates));
                     }
                 }
@@ -134,3 +139,4 @@ var Maze;
     }());
     Maze_1.Maze = Maze;
 })(Maze || (Maze = {}));
+new Maze.Maze(11, 11).generate();
