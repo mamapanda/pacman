@@ -9,7 +9,7 @@
 
     "files": [
         "ts/maze.ts",
-        "ts/entities.ts",
+        "ts/entity.ts",
         "ts/graphics.ts",
         "ts/main.ts"
     ]

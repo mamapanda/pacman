@@ -17,6 +17,10 @@ namespace Maze {
             ];
         }
 
+        public copy(): Point {
+            return new Point(this.row, this.column);
+        }
+
         public equals(other: Point): boolean {
             return this.row == other.row && this.column == other.column;
         }

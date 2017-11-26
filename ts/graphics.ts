@@ -34,4 +34,26 @@ namespace Graphics {
             }
         }
     }
+
+    export class GPacman extends Entity.Pacman implements Drawable {
+        public constructor(location: Maze.Point, image: string, width: number) {
+            super(location);
+            this.image = new Image();
+            this.image.src = image;
+            this.width = width;
+        }
+
+        public draw(ctx: CanvasRenderingContext2D): void {
+            if (this.image.complete) {
+                let x: number = this.location.column * this.width;
+                let y: number = this.location.row * this.width;
+                ctx.drawImage(this.image, x, y, this.width, this.width);
+            } else {
+                this.image.onload = () => this.draw(ctx);
+            }
+        }
+
+        private image: HTMLImageElement;
+        private width: number;
+    }
 }

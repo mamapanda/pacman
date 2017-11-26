@@ -13,6 +13,9 @@ var Maze;
                 new Point(this.row, this.column + 1)
             ];
         };
+        Point.prototype.copy = function () {
+            return new Point(this.row, this.column);
+        };
         Point.prototype.equals = function (other) {
             return this.row == other.row && this.column == other.column;
         };
@@ -144,6 +147,64 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Entity;
+(function (Entity_1) {
+    var Direction;
+    (function (Direction) {
+        Direction[Direction["Up"] = 0] = "Up";
+        Direction[Direction["Down"] = 1] = "Down";
+        Direction[Direction["Left"] = 2] = "Left";
+        Direction[Direction["Right"] = 3] = "Right";
+    })(Direction = Entity_1.Direction || (Entity_1.Direction = {}));
+    var Entity = (function () {
+        function Entity(location) {
+            this.location = location;
+        }
+        Entity.prototype.collidesWith = function (other) {
+            return this.location.equals(other.location);
+        };
+        return Entity;
+    }());
+    Entity_1.Entity = Entity;
+    var Pacman = (function (_super) {
+        __extends(Pacman, _super);
+        function Pacman(location) {
+            var _this = _super.call(this, location) || this;
+            _this.alive = true;
+            return _this;
+        }
+        Pacman.prototype.move = function (pathAt, direction) {
+            var newLocation = this.location.copy();
+            switch (direction) {
+                case Direction.Up:
+                    --newLocation.row;
+                    break;
+                case Direction.Down:
+                    ++newLocation.row;
+                    break;
+                case Direction.Left:
+                    --newLocation.column;
+                    break;
+                case Direction.Right:
+                    ++newLocation.column;
+                    break;
+            }
+            if (pathAt(newLocation)) {
+                this.location = newLocation;
+            }
+        };
+        return Pacman;
+    }(Entity));
+    Entity_1.Pacman = Pacman;
+    var Enemy = (function (_super) {
+        __extends(Enemy, _super);
+        function Enemy() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return Enemy;
+    }(Entity));
+    Entity_1.Enemy = Enemy;
+})(Entity || (Entity = {}));
 var Graphics;
 (function (Graphics) {
     var GMaze = (function (_super) {
@@ -174,6 +235,29 @@ var Graphics;
         return GMaze;
     }(Maze.Maze));
     Graphics.GMaze = GMaze;
+    var GPacman = (function (_super) {
+        __extends(GPacman, _super);
+        function GPacman(location, image, width) {
+            var _this = _super.call(this, location) || this;
+            _this.image = new Image();
+            _this.image.src = image;
+            _this.width = width;
+            return _this;
+        }
+        GPacman.prototype.draw = function (ctx) {
+            var _this = this;
+            if (this.image.complete) {
+                var x = this.location.column * this.width;
+                var y = this.location.row * this.width;
+                ctx.drawImage(this.image, x, y, this.width, this.width);
+            }
+            else {
+                this.image.onload = function () { return _this.draw(ctx); };
+            }
+        };
+        return GPacman;
+    }(Entity.Pacman));
+    Graphics.GPacman = GPacman;
 })(Graphics || (Graphics = {}));
 var maze = new Graphics.GMaze(29, 49, 20);
 var canvas = document.getElementById("game-canvas");
@@ -183,3 +267,5 @@ canvas.height = maze.rows * maze.tileWidth;
 maze.setColors("black", "dimgray");
 maze.generate();
 maze.draw(ctx);
+var pacman = new Graphics.GPacman(new Maze.Point(0, 0), "img/pacman.gif", 20);
+pacman.draw(ctx);
