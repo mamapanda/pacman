@@ -4,10 +4,13 @@
         "target": "es5",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outDir": "js"
+        "outFile": "build/build.js"
     },
 
-    "include": [
-        "ts"
+    "files": [
+        "ts/maze.ts",
+        "ts/entities.ts",
+        "ts/graphics.ts",
+        "ts/main.ts"
     ]
 }
