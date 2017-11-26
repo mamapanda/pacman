@@ -70,7 +70,7 @@ namespace Maze {
                 new Point(p.row, p.column + 2)
             ];
             return paths.filter(point =>
-                this.contains(point) && !this.pathAt(point));
+                                this.contains(point) && !this.pathAt(point));
         }
 
         private makePath(start: Point, end: Point): void {

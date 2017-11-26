@@ -1,16 +1,16 @@
 namespace Graphics {
-    export interface Drawable {
+    export interface Drawer {
         draw(ctx: CanvasRenderingContext2D): void;
     }
 
-    export class GMaze implements Drawable {
-        public base: Maze.Maze;
+    export class MazeDrawer implements Drawer {
+        public maze: Maze.Maze;
         public pathColor: string;
         public wallColor: string;
         public readonly tileWidth: number;
 
-        public constructor(base: Maze.Maze, tileWidth: number) {
-            this.base = base;
+        public constructor(maze: Maze.Maze, tileWidth: number) {
+            this.maze = maze;
             this.tileWidth = tileWidth;
             this.pathColor = "";
             this.wallColor = "";
@@ -22,9 +22,9 @@ namespace Graphics {
         }
 
         public draw(ctx: CanvasRenderingContext2D): void {
-            for (let row: number = 0; row < this.base.rows; ++row) {
-                for (let col: number = 0; col < this.base.columns; ++col) {
-                    let path: boolean = this.base.pathAt(new Maze.Point(row, col));
+            for (let row: number = 0; row < this.maze.rows; ++row) {
+                for (let col: number = 0; col < this.maze.columns; ++col) {
+                    let path: boolean = this.maze.pathAt(new Maze.Point(row, col));
                     let color: string = path ? this.pathColor : this.wallColor;
                     let x: number = col * this.tileWidth;
                     let y: number = row * this.tileWidth;
@@ -36,11 +36,11 @@ namespace Graphics {
         }
     }
 
-    export class GEntity implements Drawable {
-        public base: Entity.Entity;
+    export class EntityDrawer implements Drawer {
+        public entity: Entity.Entity;
 
-        public constructor(base: Entity.Entity, imagePath: string, width: number) {
-            this.base = base;
+        public constructor(entity: Entity.Entity, imagePath: string, width: number) {
+            this.entity = entity;
             this.image = new Image();
             this.image.src = imagePath;
             this.width = width;
@@ -48,8 +48,8 @@ namespace Graphics {
 
         public draw(ctx: CanvasRenderingContext2D): void {
             if (this.image.complete) {
-                let x: number = this.base.location.column * this.width;
-                let y: number = this.base.location.row * this.width;
+                let x: number = this.entity.location.column * this.width;
+                let y: number = this.entity.location.row * this.width;
                 ctx.drawImage(this.image, x, y, this.width, this.width);
             } else {
                 this.image.onload = () => this.draw(ctx);
