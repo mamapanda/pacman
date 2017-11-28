@@ -1,3 +1,20 @@
+namespace Program {
+    export class Program {
+        public constructor(
+            canvasId: string,
+            mazeDimensions: [number, number],
+            enemyFactory: Entity.EnemyFactory,
+            pacmanImage: string,
+            enemyImages: string[]
+        ) {
+
+        }
+
+        private ctx: CanvasRenderingContext2D;
+        private drawers: Graphics.Drawer[];
+    }
+}
+
 let gMaze: Graphics.MazeDrawer = new Graphics.MazeDrawer(
     new Maze.Maze(29, 49), 20
 );

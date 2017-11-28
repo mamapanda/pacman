@@ -94,6 +94,13 @@ namespace Entity {
         }
     }
 
+    export class RandomEnemy extends Enemy {
+        public move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
+            let paths: Maze.Point[] = Enemy.pathsFrom(pathAt, this.location);
+            this.location = paths[Math.floor(Math.random() * paths.length)];
+        }
+    }
+
     abstract class AdvancedEnemy extends Enemy {
         public move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
             let goal: PointNode = this.searchPath(pathAt, target.location);
@@ -145,10 +152,20 @@ namespace Entity {
         ): PointNode;
     }
 
-    export class RandomEnemy extends Enemy {
-        public move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
-            let paths: Maze.Point[] = Enemy.pathsFrom(pathAt, this.location);
-            this.location = paths[Math.floor(Math.random() * paths.length)];
+    export class GreedyEnemy extends AdvancedEnemy {
+        protected heuristic(
+            point: Maze.Point,
+            goal: Maze.Point,
+            parent?: PointNode
+        ): PointNode {
+            let gScore: number = parent == null ? 0 : parent.gScore + 1;
+            let hScore: number = manhattanDistance(point, goal);
+
+            return new PointNode(point, gScore, hScore, parent);
         }
+    }
+
+    export interface EnemyFactory {
+        make(n: number);
     }
 }
