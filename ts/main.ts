@@ -1,17 +1,33 @@
 namespace Program {
     export class Program {
         public constructor(
-            canvasId: string,
             mazeDimensions: [number, number],
             enemyFactory: Entity.EnemyFactory,
+            canvasId: string,
             pacmanImage: string,
-            enemyImages: string[]
+            enemyImages: string[],
+            tileWidth: number
         ) {
 
         }
 
+        private maze: Maze.Maze;
+        private enemyFactory: Entity.EnemyFactory;
+        private pacman: Entity.Pacman;
+
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
+
+        private initCanvas(canvasId: string, tileWidth: number): void {
+            let canvas: HTMLCanvasElement =
+                document.getElementById(canvasId) as HTMLCanvasElement;
+
+            canvas.width = this.maze.columns * tileWidth;
+            canvas.height = this.maze.rows * tileWidth;
+
+            this.ctx = canvas.getContext("2d");
+        }
+
     }
 }
 

@@ -166,6 +166,27 @@ namespace Entity {
     }
 
     export interface EnemyFactory {
-        make(n: number);
+        make(points: Maze.Point[]): Enemy[];
+    }
+
+    export class DefaultFactory implements EnemyFactory {
+        public constructor() {}
+
+        public make(points: Maze.Point[]): Enemy[] {
+            let enemies: Enemy[] = []
+
+            for (let i: number = 0; i < points.length; ++i) {
+                switch (i % 2) {
+                case 0:
+                    enemies.push(new RandomEnemy(points[i]));
+                    break;
+                case 1:
+                    enemies.push(new GreedyEnemy(points[i]));
+                    break;
+                }
+            }
+
+            return enemies;
+        }
     }
 }
