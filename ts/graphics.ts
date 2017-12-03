@@ -4,24 +4,14 @@ namespace Graphics {
     }
 
     export class MazeDrawer implements Drawer {
-        public maze: Maze.Maze;
-        public pathColor: string;
-        public wallColor: string;
-        public readonly tileWidth: number;
+        constructor(
+            public maze: Maze.Maze,
+            public pathColor: string,
+            public wallColor: string,
+            public readonly tileWidth: number
+        ) {}
 
-        public constructor(maze: Maze.Maze, tileWidth: number) {
-            this.maze = maze;
-            this.tileWidth = tileWidth;
-            this.pathColor = "";
-            this.wallColor = "";
-        }
-
-        public setColors(pathColor: string, wallColor: string): void {
-            this.pathColor = pathColor;
-            this.wallColor = wallColor;
-        }
-
-        public draw(ctx: CanvasRenderingContext2D): void {
+        draw(ctx: CanvasRenderingContext2D): void {
             for (let row: number = 0; row < this.maze.rows; ++row) {
                 for (let col: number = 0; col < this.maze.columns; ++col) {
                     let path: boolean = this.maze.pathAt(new Maze.Point(row, col));
@@ -37,16 +27,16 @@ namespace Graphics {
     }
 
     export class EntityDrawer implements Drawer {
-        public entity: Entity.Entity;
-
-        public constructor(entity: Entity.Entity, imagePath: string, width: number) {
-            this.entity = entity;
+        constructor(
+            public entity: Entity.Entity,
+            private width,
+            imagePath: string
+        ) {
             this.image = new Image();
             this.image.src = imagePath;
-            this.width = width;
         }
 
-        public draw(ctx: CanvasRenderingContext2D): void {
+        draw(ctx: CanvasRenderingContext2D): void {
             if (this.image.complete) {
                 let x: number = this.entity.location.column * this.width;
                 let y: number = this.entity.location.row * this.width;
@@ -57,6 +47,5 @@ namespace Graphics {
         }
 
         private image: HTMLImageElement;
-        private width: number;
     }
 }

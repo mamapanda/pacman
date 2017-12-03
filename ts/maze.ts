@@ -1,14 +1,8 @@
 namespace Maze {
     export class Point {
-        public row: number;
-        public column: number;
+        constructor(public row: number, public column: number) {}
 
-        public constructor(row: number, column: number) {
-            this.row = row;
-            this.column = column;
-        }
-
-        public adjacents(): Point[] {
+        adjacents(): Point[] {
             return [
                 new Point(this.row - 1, this.column),
                 new Point(this.row + 1, this.column),
@@ -17,34 +11,28 @@ namespace Maze {
             ];
         }
 
-        public copy(): Point {
+        copy(): Point {
             return new Point(this.row, this.column);
         }
 
-        public equals(other: Point): boolean {
+        equals(other: Point): boolean {
             return this.row == other.row && this.column == other.column;
         }
     }
 
     export class Maze {
-        public readonly rows: number;
-        public readonly columns: number;
+        constructor(public rows: number, public columns: number) {}
 
-        public constructor(rows: number, columns: number) {
-            this.rows = rows;
-            this.columns = columns;
-        }
-
-        public contains(p: Point): boolean {
+        contains(p: Point): boolean {
             return p.row >= 0 && p.row < this.rows &&
                 p.column >= 0 && p.column < this.columns;
         }
 
-        public pathAt(p: Point): boolean {
+        pathAt(p: Point): boolean {
             return this.contains(p) && this.tiles[p.row][p.column];
         }
 
-        public generate(): void {
+        generate(): void {
             this.resetTiles();
             this.generatePaths();
             this.patchDeadEnds();

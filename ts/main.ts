@@ -1,22 +1,36 @@
 namespace Program {
     export class Program {
         public constructor(
-            mazeDimensions: [number, number],
+            [rows, columns]: [number, number],
             enemyFactory: Entity.EnemyFactory,
             canvasId: string,
             pacmanImage: string,
             enemyImages: string[],
             tileWidth: number
         ) {
+            this.maze = new Maze.Maze(rows, columns);
+            this.enemyFactory = enemyFactory;
+            this.enemies = []
+            this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
+        }
 
+        public draw(): void {
+            for (let drawer of this.drawers) {
+                drawer.draw(this.ctx);
+            }
         }
 
         private maze: Maze.Maze;
         private enemyFactory: Entity.EnemyFactory;
+        private enemies: Entity.Enemy[];
         private pacman: Entity.Pacman;
 
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
+
+        private initEnemies(): void {
+
+        }
 
         private initCanvas(canvasId: string, tileWidth: number): void {
             let canvas: HTMLCanvasElement =
@@ -28,6 +42,30 @@ namespace Program {
             this.ctx = canvas.getContext("2d");
         }
 
+        private initDrawers(
+            pacmanImage: string,
+            enemyImages: string[],
+            tileWidth: number
+        ): void {
+            this.drawers = []
+
+            let mazeDrawer = new Graphics.MazeDrawer(this.maze, tileWidth);
+            mazeDrawer.setColors("black", "dimgray");
+
+            this.drawers.push(mazeDrawer);
+
+            this.drawers.push(
+                new Graphics.EntityDrawer(this.pacman, pacmanImage, tileWidth)
+            );
+
+            for (let i: number = 0; i < this.enemies.length; ++i) {
+                let image: string = enemyImages[i % enemyImages.length];
+
+                this.drawers.push(
+                    new Graphics.EntityDrawer(this.enemies[0], image, tileWidth)
+                );
+            }
+        }
     }
 }
 

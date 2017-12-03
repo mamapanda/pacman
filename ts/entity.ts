@@ -7,29 +7,22 @@ namespace Entity {
     }
 
     export class Entity {
-        public location: Maze.Point;
+        constructor(public location: Maze.Point) {}
 
-        public constructor(location: Maze.Point) {
-            this.location = location;
-        }
-
-        public collidesWith(other: Entity): boolean {
+        collidesWith(other: Entity): boolean {
             return this.location.equals(other.location);
         }
     }
 
     export class Pacman extends Entity {
-        public alive: boolean;
+        alive: boolean;
 
-        public constructor(location: Maze.Point) {
+        constructor(location: Maze.Point) {
             super(location);
             this.alive = true;
         }
 
-        public move(
-            pathAt: (point: Maze.Point) => boolean,
-            direction: Direction
-        ): void {
+        move(pathAt: (point: Maze.Point) => boolean, direction: Direction): void {
             let newLocation: Maze.Point = this.location.copy();
 
             switch (direction) {
@@ -54,24 +47,14 @@ namespace Entity {
     }
 
     class PointNode {
-        public readonly point: Maze.Point;
-        public readonly gScore: number;
-        public readonly hScore: number;
-        public readonly parent: PointNode;
+        constructor(
+            readonly point: Maze.Point,
+            readonly gScore: number,
+            readonly hScore: number,
+            readonly parent?: PointNode
+        ) {}
 
-        public constructor(
-            point: Maze.Point,
-            gScore: number,
-            hScore: number,
-            parent?: PointNode
-        ) {
-            this.point = point;
-            this.gScore = gScore;
-            this.hScore = hScore;
-            this.parent = parent;
-        }
-
-        public fScore(): number {
+        fScore(): number {
             return this.gScore + this.hScore;
         }
     }
@@ -81,7 +64,7 @@ namespace Entity {
     }
 
     export abstract class Enemy extends Entity {
-        public abstract move(
+        abstract move(
             pathAt: (point: Maze.Point) => boolean,
             target: Pacman
         ): void;
@@ -95,14 +78,14 @@ namespace Entity {
     }
 
     export class RandomEnemy extends Enemy {
-        public move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
+        move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
             let paths: Maze.Point[] = Enemy.pathsFrom(pathAt, this.location);
             this.location = paths[Math.floor(Math.random() * paths.length)];
         }
     }
 
     abstract class AdvancedEnemy extends Enemy {
-        public move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
+        move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
             let goal: PointNode = this.searchPath(pathAt, target.location);
 
             while (goal.parent.parent != null) {
@@ -170,9 +153,9 @@ namespace Entity {
     }
 
     export class DefaultFactory implements EnemyFactory {
-        public constructor() {}
+        constructor() {}
 
-        public make(points: Maze.Point[]): Enemy[] {
+        make(points: Maze.Point[]): Enemy[] {
             let enemies: Enemy[] = []
 
             for (let i: number = 0; i < points.length; ++i) {

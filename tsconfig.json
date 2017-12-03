@@ -10,6 +10,7 @@
     "files": [
         "ts/maze.ts",
         "ts/entity.ts",
+        "ts/state.ts",
         "ts/graphics.ts",
         "ts/main.ts"
     ]
