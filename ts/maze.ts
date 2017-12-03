@@ -1,4 +1,8 @@
 namespace Maze {
+    export enum Quadrant {
+        I, II, III, IV
+    }
+
     export class Point {
         constructor(public row: number, public column: number) {}
 
@@ -36,6 +40,37 @@ namespace Maze {
             this.resetTiles();
             this.generatePaths();
             this.patchDeadEnds();
+        }
+
+        quadrant(p: Point): Quadrant {
+            let upperHalf: boolean = p.row >= 0 && p.row < this.rows / 2;
+            let leftHalf: boolean = p.column >= 0 && p.column < this.columns / 2;
+
+            if (upperHalf && leftHalf) {
+                return Quadrant.I;
+            } else if (upperHalf) {
+                return Quadrant.II;
+            } else if (leftHalf) {
+                return Quadrant.III;
+            } else {
+                return Quadrant.IV;
+            }
+        }
+
+        paths(): Point[] {
+            let points: Point[] = [];
+
+            for (let row: number = 0; row < this.rows; ++row) {
+                for (let col: number = 0; col < this.columns; ++col) {
+                    let point: Maze.Point = new Point(row, col);
+
+                    if (this.pathAt(point)) {
+                        points.push(point);
+                    }
+                }
+            }
+
+            return points;
         }
 
         private tiles: boolean[][];

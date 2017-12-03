@@ -9,25 +9,8 @@ namespace State {
         }
     }
 
-    function randPoints(maze: Maze.Maze, nPoints: number): Maze.Point[] {
-        let points: Maze.Point[] = [];
-
-        for (let row: number = 0; row < maze.rows; ++row) {
-            for (let col: number = 0; col < maze.columns; ++col) {
-                let point: Maze.Point = new Maze.Point(row, col);
-
-                if (maze.pathAt(point)) {
-                    points.push(point);
-                }
-            }
-        }
-
-        shuffle(points);
-
-        return points.slice(0, nPoints);
-    }
-
     export class State {
+        iteration: number;
         level: number;
         enemies: Entity.Enemy[];
 
@@ -38,15 +21,47 @@ namespace State {
             private nStartingEnemies: number,
             private enemyUpdateDelay: number
         ) {
-            this.level = 1;
+            this.iteration = 0;
+            this.level = 0;
             this.enemies = []
         }
 
         initEnemies(): void {
             let nEnemies: number = this.level + this.nStartingEnemies - 1;
-            let points: Maze.Point[] = randPoints(this.maze, nEnemies);
+            let points: Maze.Point[] = this.maze.paths().filter(
+                p => this.maze.quadrant(p) != Maze.Quadrant.I
+            );
+
+            shuffle(points);
+            points.splice(nEnemies, points.length);
 
             this.enemies = this.enemyFactory.make(points);
+        }
+
+        init(): void {
+            ++this.level;
+
+            this.pacman.location = new Maze.Point(0, 0);
+            this.initEnemies();
+        }
+
+        advance(pacmanDirection: Entity.Direction): void {
+            this.pacman.move(p => this.maze.pathAt(p), pacmanDirection);
+            this.checkPacman();
+
+            if (this.iteration % this.enemyUpdateDelay == 0) {
+                this.enemies.forEach(e => {
+                    e.move(p => this.maze.pathAt(p), this.pacman)
+                });
+            }
+        }
+
+        private checkPacman(): void {
+            this.enemies.forEach(e => {
+                if (e.collidesWith(this.pacman)) {
+                    this.pacman.alive = false;
+                }
+            });
         }
     }
 }
