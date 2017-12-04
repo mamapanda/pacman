@@ -22,6 +22,10 @@ namespace Maze {
         equals(other: Point): boolean {
             return this.row == other.row && this.column == other.column;
         }
+
+        toString(): string {
+            return "[Point: " + this.row + ", " + this.column + "]";
+        }
     }
 
     export class Maze {

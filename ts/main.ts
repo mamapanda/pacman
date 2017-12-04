@@ -4,6 +4,8 @@ namespace Program {
             public state: State.State,
             public readonly pacmanImage: string,
             public readonly enemyImages: string[],
+            public readonly pathColor: string,
+            public readonly wallColor: string,
             public readonly tileWidth: number,
             public readonly updateRate: number,
             canvasId: string
@@ -43,7 +45,7 @@ namespace Program {
 
             this.drawers.push(
                 new Graphics.MazeDrawer(
-                    this.state.maze, "black", "dimgray", this.tileWidth
+                    this.state.maze, this.pathColor, this.wallColor, this.tileWidth
                 )
             );
 
@@ -65,20 +67,83 @@ namespace Program {
             }
         }
     }
+
+    export class Builder {
+        build(): Program {
+            return new Program(
+                this.state,
+                this.pacmanImage,
+                this.enemyImages,
+                this.pathColor,
+                this.wallColor,
+                this.tileWidth,
+                this.updateRate,
+                this.canvasId
+            );
+        }
+
+        setState(state: State.State) {
+            this.state = state;
+            return this;
+        }
+
+        setPacmanImage(pacmanImage: string) {
+            this.pacmanImage = pacmanImage;
+            return this;
+        }
+
+        setEnemyImages(enemyImages: string[]) {
+            this.enemyImages = enemyImages;
+            return this;
+        }
+
+        setPathColor(pathColor: string) {
+            this.pathColor = pathColor;
+            return this;
+        }
+
+        setWallColor(wallColor: string) {
+            this.wallColor = wallColor;
+            return this;
+        }
+
+        setTileWidth(tileWidth: number) {
+            this.tileWidth = tileWidth;
+            return this;
+        }
+
+        setUpdateRate(updateRate: number) {
+            this.updateRate = updateRate;
+            return this;
+        }
+
+        setCanvasId(canvasId: string) {
+            this.canvasId = canvasId;
+            return this;
+        }
+
+        private state: State.State;
+        private pacmanImage: string;
+        private enemyImages: string[];
+        private pathColor: string;
+        private wallColor: string;
+        private tileWidth: number;
+        private updateRate: number;
+        private canvasId: string;
+    }
 }
 
-let program: Program.Program = new Program.Program(
-    new State.State(
-        new Maze.Maze(29, 49),
-        new Entity.DefaultFactory(),
-        2,
-        2
-    ),
-    "img/pacman.gif",
-    ["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"],
-    20,
-    1000,
-    "game-canvas",
-);
+let maze = new Maze.Maze(29, 49);
+let state = new State.State(maze, new Entity.DefaultFactory(), 2, 2);
+let program = new Program.Builder()
+    .setState(state)
+    .setPacmanImage("img/pacman.gif")
+    .setEnemyImages(["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"])
+    .setPathColor("black")
+    .setWallColor("dimgray")
+    .setTileWidth(20)
+    .setUpdateRate(250)
+    .setCanvasId("game-canvas")
+    .build();
 
 program.start();

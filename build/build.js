@@ -26,6 +26,9 @@ var Maze;
         Point.prototype.equals = function (other) {
             return this.row == other.row && this.column == other.column;
         };
+        Point.prototype.toString = function () {
+            return "[Point: " + this.row + ", " + this.column + "]";
+        };
         return Point;
     }());
     Maze_1.Point = Point;
@@ -275,6 +278,9 @@ var Entity;
             return _super !== null && _super.apply(this, arguments) || this;
         }
         AdvancedEnemy.prototype.move = function (pathAt, target) {
+            if (this.location.equals(target.location)) {
+                return;
+            }
             var goal = this.searchPath(pathAt, target.location);
             while (goal.parent.parent != null) {
                 goal = goal.parent;
@@ -346,10 +352,10 @@ var State;
 (function (State_1) {
     function shuffle(xs) {
         for (var i = xs.length - 1; i >= 0; --i) {
-            var index = Math.floor(i * Math.random());
+            var index = Math.floor((i + 1) * Math.random());
             var temp = xs[i];
             xs[i] = xs[index];
-            xs[index] = xs[i];
+            xs[index] = temp;
         }
     }
     var State = (function () {
@@ -369,9 +375,7 @@ var State;
             var points = this.maze.paths().filter(function (p) { return _this.maze.quadrant(p) != Maze.Quadrant.I; });
             shuffle(points);
             points.splice(nEnemies, points.length);
-            console.log(points);
             this.enemies = this.enemyFactory.make(points);
-            console.log(this.enemies);
         };
         State.prototype.init = function () {
             ++this.level;
@@ -450,10 +454,12 @@ var Graphics;
 var Program;
 (function (Program_1) {
     var Program = (function () {
-        function Program(state, pacmanImage, enemyImages, tileWidth, updateRate, canvasId) {
+        function Program(state, pacmanImage, enemyImages, pathColor, wallColor, tileWidth, updateRate, canvasId) {
             this.state = state;
             this.pacmanImage = pacmanImage;
             this.enemyImages = enemyImages;
+            this.pathColor = pathColor;
+            this.wallColor = wallColor;
             this.tileWidth = tileWidth;
             this.updateRate = updateRate;
             this.initCanvas(canvasId);
@@ -479,7 +485,7 @@ var Program;
         };
         Program.prototype.initDrawers = function () {
             this.drawers = [];
-            this.drawers.push(new Graphics.MazeDrawer(this.state.maze, "black", "dimgray", this.tileWidth));
+            this.drawers.push(new Graphics.MazeDrawer(this.state.maze, this.pathColor, this.wallColor, this.tileWidth));
             this.drawers.push(new Graphics.EntityDrawer(this.state.pacman, this.tileWidth, this.pacmanImage));
             for (var i = 0; i < this.state.enemies.length; ++i) {
                 var index = i % this.enemyImages.length;
@@ -490,6 +496,58 @@ var Program;
         return Program;
     }());
     Program_1.Program = Program;
+    var Builder = (function () {
+        function Builder() {
+        }
+        Builder.prototype.build = function () {
+            return new Program(this.state, this.pacmanImage, this.enemyImages, this.pathColor, this.wallColor, this.tileWidth, this.updateRate, this.canvasId);
+        };
+        Builder.prototype.setState = function (state) {
+            this.state = state;
+            return this;
+        };
+        Builder.prototype.setPacmanImage = function (pacmanImage) {
+            this.pacmanImage = pacmanImage;
+            return this;
+        };
+        Builder.prototype.setEnemyImages = function (enemyImages) {
+            this.enemyImages = enemyImages;
+            return this;
+        };
+        Builder.prototype.setPathColor = function (pathColor) {
+            this.pathColor = pathColor;
+            return this;
+        };
+        Builder.prototype.setWallColor = function (wallColor) {
+            this.wallColor = wallColor;
+            return this;
+        };
+        Builder.prototype.setTileWidth = function (tileWidth) {
+            this.tileWidth = tileWidth;
+            return this;
+        };
+        Builder.prototype.setUpdateRate = function (updateRate) {
+            this.updateRate = updateRate;
+            return this;
+        };
+        Builder.prototype.setCanvasId = function (canvasId) {
+            this.canvasId = canvasId;
+            return this;
+        };
+        return Builder;
+    }());
+    Program_1.Builder = Builder;
 })(Program || (Program = {}));
-var program = new Program.Program(new State.State(new Maze.Maze(29, 49), new Entity.DefaultFactory(), 2, 2), "img/pacman.gif", ["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"], 20, 1000, "game-canvas");
+var maze = new Maze.Maze(29, 49);
+var state = new State.State(maze, new Entity.DefaultFactory(), 2, 2);
+var program = new Program.Builder()
+    .setState(state)
+    .setPacmanImage("img/pacman.gif")
+    .setEnemyImages(["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"])
+    .setPathColor("black")
+    .setWallColor("dimgray")
+    .setTileWidth(20)
+    .setUpdateRate(250)
+    .setCanvasId("game-canvas")
+    .build();
 program.start();

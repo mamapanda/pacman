@@ -1,11 +1,11 @@
 namespace State {
     function shuffle(xs: any[]) {
         for (let i: number = xs.length - 1; i >= 0; --i) {
-            let index: number = Math.floor(i * Math.random());
+            let index: number = Math.floor((i + 1) * Math.random());
 
             let temp: any = xs[i];
             xs[i] = xs[index];
-            xs[index] = xs[i];
+            xs[index] = temp;
         }
     }
 
@@ -35,10 +35,8 @@ namespace State {
 
             shuffle(points);
             points.splice(nEnemies, points.length);
-            console.log(points);
 
             this.enemies = this.enemyFactory.make(points);
-            console.log(this.enemies);
         }
 
         init(): void {

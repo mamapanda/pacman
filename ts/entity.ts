@@ -86,6 +86,10 @@ namespace Entity {
 
     abstract class AdvancedEnemy extends Enemy {
         move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
+            if (this.location.equals(target.location)) {
+                return;
+            }
+
             let goal: PointNode = this.searchPath(pathAt, target.location);
 
             while (goal.parent.parent != null) {
