@@ -110,16 +110,16 @@ namespace Entity {
                     (p1, p2) => p1.fScore() < p2.fScore() ? p1 : p2
                 );
 
-                if (closedSet.some(p => node.point.equals(p))) {
-                    continue;
-                }
+                openSet = openSet.filter(p => p != node);
 
                 if (node.point.equals(goal)) {
                     return node;
                 }
 
-                node.point.adjacents().filter(p => pathAt(p)).forEach(p => {
-                    openSet.push(this.heuristic(p, goal, node));
+                node.point.adjacents().forEach(p => {
+                    if (pathAt(p) && !closedSet.some(visited => visited.equals(p))) {
+                        openSet.push(this.heuristic(p, goal, node));
+                    }
                 });
 
                 closedSet.push(node.point);

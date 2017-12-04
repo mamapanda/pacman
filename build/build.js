@@ -1,5 +1,12 @@
 var Maze;
 (function (Maze_1) {
+    var Quadrant;
+    (function (Quadrant) {
+        Quadrant[Quadrant["I"] = 0] = "I";
+        Quadrant[Quadrant["II"] = 1] = "II";
+        Quadrant[Quadrant["III"] = 2] = "III";
+        Quadrant[Quadrant["IV"] = 3] = "IV";
+    })(Quadrant = Maze_1.Quadrant || (Maze_1.Quadrant = {}));
     var Point = (function () {
         function Point(row, column) {
             this.row = row;
@@ -38,6 +45,34 @@ var Maze;
             this.resetTiles();
             this.generatePaths();
             this.patchDeadEnds();
+        };
+        Maze.prototype.quadrant = function (p) {
+            var upperHalf = p.row >= 0 && p.row < this.rows / 2;
+            var leftHalf = p.column >= 0 && p.column < this.columns / 2;
+            if (upperHalf && leftHalf) {
+                return Quadrant.I;
+            }
+            else if (upperHalf) {
+                return Quadrant.II;
+            }
+            else if (leftHalf) {
+                return Quadrant.III;
+            }
+            else {
+                return Quadrant.IV;
+            }
+        };
+        Maze.prototype.paths = function () {
+            var points = [];
+            for (var row = 0; row < this.rows; ++row) {
+                for (var col = 0; col < this.columns; ++col) {
+                    var point = new Point(row, col);
+                    if (this.pathAt(point)) {
+                        points.push(point);
+                    }
+                }
+            }
+            return points;
         };
         Maze.prototype.resetTiles = function () {
             this.tiles = [];
@@ -196,32 +231,189 @@ var Entity;
         return Pacman;
     }(Entity));
     Entity_1.Pacman = Pacman;
+    var PointNode = (function () {
+        function PointNode(point, gScore, hScore, parent) {
+            this.point = point;
+            this.gScore = gScore;
+            this.hScore = hScore;
+            this.parent = parent;
+        }
+        PointNode.prototype.fScore = function () {
+            return this.gScore + this.hScore;
+        };
+        return PointNode;
+    }());
+    function manhattanDistance(p1, p2) {
+        return Math.abs(p1.row - p2.row) + Math.abs(p1.column - p2.column);
+    }
     var Enemy = (function (_super) {
         __extends(Enemy, _super);
         function Enemy() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        Enemy.pathsFrom = function (pathAt, point) {
+            return point.adjacents().filter(function (p) { return pathAt(p); });
+        };
         return Enemy;
     }(Entity));
     Entity_1.Enemy = Enemy;
+    var RandomEnemy = (function (_super) {
+        __extends(RandomEnemy, _super);
+        function RandomEnemy() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        RandomEnemy.prototype.move = function (pathAt, target) {
+            var paths = Enemy.pathsFrom(pathAt, this.location);
+            this.location = paths[Math.floor(Math.random() * paths.length)];
+        };
+        return RandomEnemy;
+    }(Enemy));
+    Entity_1.RandomEnemy = RandomEnemy;
+    var AdvancedEnemy = (function (_super) {
+        __extends(AdvancedEnemy, _super);
+        function AdvancedEnemy() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        AdvancedEnemy.prototype.move = function (pathAt, target) {
+            var goal = this.searchPath(pathAt, target.location);
+            while (goal.parent.parent != null) {
+                goal = goal.parent;
+            }
+            this.location = goal.point;
+        };
+        AdvancedEnemy.prototype.searchPath = function (pathAt, goal) {
+            var _this = this;
+            var start = new PointNode(this.location, 0, manhattanDistance(this.location, goal));
+            var openSet = [start];
+            var closedSet = [];
+            var _loop_2 = function () {
+                var node = openSet.reduce(function (p1, p2) { return p1.fScore() < p2.fScore() ? p1 : p2; });
+                openSet = openSet.filter(function (p) { return p != node; });
+                if (node.point.equals(goal)) {
+                    return { value: node };
+                }
+                node.point.adjacents().forEach(function (p) {
+                    if (pathAt(p) && !closedSet.some(function (visited) { return visited.equals(p); })) {
+                        openSet.push(_this.heuristic(p, goal, node));
+                    }
+                });
+                closedSet.push(node.point);
+            };
+            while (openSet.length > 0) {
+                var state_1 = _loop_2();
+                if (typeof state_1 === "object")
+                    return state_1.value;
+            }
+            return null;
+        };
+        return AdvancedEnemy;
+    }(Enemy));
+    var GreedyEnemy = (function (_super) {
+        __extends(GreedyEnemy, _super);
+        function GreedyEnemy() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        GreedyEnemy.prototype.heuristic = function (point, goal, parent) {
+            var gScore = parent == null ? 0 : parent.gScore + 1;
+            var hScore = manhattanDistance(point, goal);
+            return new PointNode(point, gScore, hScore, parent);
+        };
+        return GreedyEnemy;
+    }(AdvancedEnemy));
+    Entity_1.GreedyEnemy = GreedyEnemy;
+    var DefaultFactory = (function () {
+        function DefaultFactory() {
+        }
+        DefaultFactory.prototype.make = function (points) {
+            var enemies = [];
+            for (var i = 0; i < points.length; ++i) {
+                switch (i % 2) {
+                    case 0:
+                        enemies.push(new RandomEnemy(points[i]));
+                        break;
+                    case 1:
+                        enemies.push(new GreedyEnemy(points[i]));
+                        break;
+                }
+            }
+            return enemies;
+        };
+        return DefaultFactory;
+    }());
+    Entity_1.DefaultFactory = DefaultFactory;
 })(Entity || (Entity = {}));
+var State;
+(function (State_1) {
+    function shuffle(xs) {
+        for (var i = xs.length - 1; i >= 0; --i) {
+            var index = Math.floor(i * Math.random());
+            var temp = xs[i];
+            xs[i] = xs[index];
+            xs[index] = xs[i];
+        }
+    }
+    var State = (function () {
+        function State(maze, enemyFactory, nStartingEnemies, enemyUpdateDelay) {
+            this.maze = maze;
+            this.enemyFactory = enemyFactory;
+            this.nStartingEnemies = nStartingEnemies;
+            this.enemyUpdateDelay = enemyUpdateDelay;
+            this.iteration = 0;
+            this.level = 0;
+            this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
+            this.enemies = [];
+        }
+        State.prototype.initEnemies = function () {
+            var _this = this;
+            var nEnemies = this.level + this.nStartingEnemies - 1;
+            var points = this.maze.paths().filter(function (p) { return _this.maze.quadrant(p) != Maze.Quadrant.I; });
+            shuffle(points);
+            points.splice(nEnemies, points.length);
+            console.log(points);
+            this.enemies = this.enemyFactory.make(points);
+            console.log(this.enemies);
+        };
+        State.prototype.init = function () {
+            ++this.level;
+            this.maze.generate();
+            this.pacman.location = new Maze.Point(0, 0);
+            this.initEnemies();
+        };
+        State.prototype.advance = function (pacmanDirection) {
+            var _this = this;
+            this.pacman.move(function (p) { return _this.maze.pathAt(p); }, pacmanDirection);
+            this.checkPacman();
+            if (this.iteration % this.enemyUpdateDelay == 0) {
+                this.enemies.forEach(function (e) {
+                    e.move(function (p) { return _this.maze.pathAt(p); }, _this.pacman);
+                });
+            }
+        };
+        State.prototype.checkPacman = function () {
+            var _this = this;
+            this.enemies.forEach(function (e) {
+                if (e.collidesWith(_this.pacman)) {
+                    _this.pacman.alive = false;
+                }
+            });
+        };
+        return State;
+    }());
+    State_1.State = State;
+})(State || (State = {}));
 var Graphics;
 (function (Graphics) {
-    var GMaze = (function () {
-        function GMaze(base, tileWidth) {
-            this.base = base;
-            this.tileWidth = tileWidth;
-            this.pathColor = "";
-            this.wallColor = "";
-        }
-        GMaze.prototype.setColors = function (pathColor, wallColor) {
+    var MazeDrawer = (function () {
+        function MazeDrawer(maze, pathColor, wallColor, tileWidth) {
+            this.maze = maze;
             this.pathColor = pathColor;
             this.wallColor = wallColor;
-        };
-        GMaze.prototype.draw = function (ctx) {
-            for (var row = 0; row < this.base.rows; ++row) {
-                for (var col = 0; col < this.base.columns; ++col) {
-                    var path = this.base.pathAt(new Maze.Point(row, col));
+            this.tileWidth = tileWidth;
+        }
+        MazeDrawer.prototype.draw = function (ctx) {
+            for (var row = 0; row < this.maze.rows; ++row) {
+                for (var col = 0; col < this.maze.columns; ++col) {
+                    var path = this.maze.pathAt(new Maze.Point(row, col));
                     var color = path ? this.pathColor : this.wallColor;
                     var x = col * this.tileWidth;
                     var y = row * this.tileWidth;
@@ -230,38 +422,74 @@ var Graphics;
                 }
             }
         };
-        return GMaze;
+        return MazeDrawer;
     }());
-    Graphics.GMaze = GMaze;
-    var GEntity = (function () {
-        function GEntity(base, imagePath, width) {
-            this.base = base;
+    Graphics.MazeDrawer = MazeDrawer;
+    var EntityDrawer = (function () {
+        function EntityDrawer(entity, width, imagePath) {
+            this.entity = entity;
+            this.width = width;
             this.image = new Image();
             this.image.src = imagePath;
-            this.width = width;
         }
-        GEntity.prototype.draw = function (ctx) {
+        EntityDrawer.prototype.draw = function (ctx) {
             var _this = this;
             if (this.image.complete) {
-                var x = this.base.location.column * this.width;
-                var y = this.base.location.row * this.width;
+                var x = this.entity.location.column * this.width;
+                var y = this.entity.location.row * this.width;
                 ctx.drawImage(this.image, x, y, this.width, this.width);
             }
             else {
                 this.image.onload = function () { return _this.draw(ctx); };
             }
         };
-        return GEntity;
+        return EntityDrawer;
     }());
-    Graphics.GEntity = GEntity;
+    Graphics.EntityDrawer = EntityDrawer;
 })(Graphics || (Graphics = {}));
-var gMaze = new Graphics.GMaze(new Maze.Maze(29, 49), 20);
-var canvas = document.getElementById("game-canvas");
-var ctx = canvas.getContext("2d");
-canvas.width = gMaze.base.columns * gMaze.tileWidth;
-canvas.height = gMaze.base.rows * gMaze.tileWidth;
-gMaze.base.generate();
-gMaze.setColors("black", "dimgray");
-gMaze.draw(ctx);
-var gPacman = new Graphics.GEntity(new Entity.Pacman(new Maze.Point(0, 0)), "img/pacman.gif", 20);
-gPacman.draw(ctx);
+var Program;
+(function (Program_1) {
+    var Program = (function () {
+        function Program(state, pacmanImage, enemyImages, tileWidth, updateRate, canvasId) {
+            this.state = state;
+            this.pacmanImage = pacmanImage;
+            this.enemyImages = enemyImages;
+            this.tileWidth = tileWidth;
+            this.updateRate = updateRate;
+            this.initCanvas(canvasId);
+        }
+        Program.prototype.draw = function () {
+            var _this = this;
+            this.drawers.forEach(function (d) { return d.draw(_this.ctx); });
+        };
+        Program.prototype.start = function () {
+            var _this = this;
+            this.state.init();
+            this.initDrawers();
+            setInterval(function () {
+                _this.draw();
+                _this.state.advance(Entity.Direction.Left);
+            }, this.updateRate);
+        };
+        Program.prototype.initCanvas = function (canvasId) {
+            var canvas = document.getElementById(canvasId);
+            canvas.width = this.state.maze.columns * this.tileWidth;
+            canvas.height = this.state.maze.rows * this.tileWidth;
+            this.ctx = canvas.getContext("2d");
+        };
+        Program.prototype.initDrawers = function () {
+            this.drawers = [];
+            this.drawers.push(new Graphics.MazeDrawer(this.state.maze, "black", "dimgray", this.tileWidth));
+            this.drawers.push(new Graphics.EntityDrawer(this.state.pacman, this.tileWidth, this.pacmanImage));
+            for (var i = 0; i < this.state.enemies.length; ++i) {
+                var index = i % this.enemyImages.length;
+                var image = this.enemyImages[index];
+                this.drawers.push(new Graphics.EntityDrawer(this.state.enemies[i], this.tileWidth, image));
+            }
+        };
+        return Program;
+    }());
+    Program_1.Program = Program;
+})(Program || (Program = {}));
+var program = new Program.Program(new State.State(new Maze.Maze(29, 49), new Entity.DefaultFactory(), 2, 2), "img/pacman.gif", ["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"], 20, 1000, "game-canvas");
+program.start();

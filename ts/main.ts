@@ -1,92 +1,84 @@
 namespace Program {
     export class Program {
-        public constructor(
-            [rows, columns]: [number, number],
-            enemyFactory: Entity.EnemyFactory,
-            canvasId: string,
-            pacmanImage: string,
-            enemyImages: string[],
-            tileWidth: number
+        constructor(
+            public state: State.State,
+            public readonly pacmanImage: string,
+            public readonly enemyImages: string[],
+            public readonly tileWidth: number,
+            public readonly updateRate: number,
+            canvasId: string
         ) {
-            this.maze = new Maze.Maze(rows, columns);
-            this.enemyFactory = enemyFactory;
-            this.enemies = []
-            this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
+            this.initCanvas(canvasId);
         }
 
-        public draw(): void {
-            for (let drawer of this.drawers) {
-                drawer.draw(this.ctx);
-            }
+        draw(): void {
+            this.drawers.forEach(d => d.draw(this.ctx));
         }
 
-        private maze: Maze.Maze;
-        private enemyFactory: Entity.EnemyFactory;
-        private enemies: Entity.Enemy[];
-        private pacman: Entity.Pacman;
+        start(): void {
+            this.state.init();
+            this.initDrawers();
+
+            setInterval(() => {
+                this.draw();
+                this.state.advance(Entity.Direction.Left);
+            }, this.updateRate);
+        }
 
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
 
-        private initEnemies(): void {
-
-        }
-
-        private initCanvas(canvasId: string, tileWidth: number): void {
+        private initCanvas(canvasId: string): void {
             let canvas: HTMLCanvasElement =
                 document.getElementById(canvasId) as HTMLCanvasElement;
 
-            canvas.width = this.maze.columns * tileWidth;
-            canvas.height = this.maze.rows * tileWidth;
+            canvas.width = this.state.maze.columns * this.tileWidth;
+            canvas.height = this.state.maze.rows * this.tileWidth;
 
             this.ctx = canvas.getContext("2d");
         }
 
-        private initDrawers(
-            pacmanImage: string,
-            enemyImages: string[],
-            tileWidth: number
-        ): void {
+        private initDrawers(): void {
             this.drawers = []
 
-            let mazeDrawer = new Graphics.MazeDrawer(this.maze, tileWidth);
-            mazeDrawer.setColors("black", "dimgray");
-
-            this.drawers.push(mazeDrawer);
-
             this.drawers.push(
-                new Graphics.EntityDrawer(this.pacman, pacmanImage, tileWidth)
+                new Graphics.MazeDrawer(
+                    this.state.maze, "black", "dimgray", this.tileWidth
+                )
             );
 
-            for (let i: number = 0; i < this.enemies.length; ++i) {
-                let image: string = enemyImages[i % enemyImages.length];
+            this.drawers.push(
+                new Graphics.EntityDrawer(
+                    this.state.pacman, this.tileWidth, this.pacmanImage
+                )
+            );
+
+            for (let i: number = 0; i < this.state.enemies.length; ++i) {
+                let index: number = i % this.enemyImages.length;
+                let image: string = this.enemyImages[index];
 
                 this.drawers.push(
-                    new Graphics.EntityDrawer(this.enemies[0], image, tileWidth)
+                    new Graphics.EntityDrawer(
+                        this.state.enemies[i], this.tileWidth, image
+                    )
                 );
             }
         }
     }
 }
 
-let gMaze: Graphics.MazeDrawer = new Graphics.MazeDrawer(
-    new Maze.Maze(29, 49), 20
-);
-let canvas: HTMLCanvasElement =
-    <HTMLCanvasElement>document.getElementById("game-canvas");
-let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-
-canvas.width = gMaze.maze.columns * gMaze.tileWidth;
-canvas.height = gMaze.maze.rows * gMaze.tileWidth;
-
-gMaze.maze.generate();
-gMaze.setColors("black", "dimgray");
-gMaze.draw(ctx);
-
-let gPacman: Graphics.EntityDrawer = new Graphics.EntityDrawer(
-    new Entity.Pacman(new Maze.Point(0, 0)),
+let program: Program.Program = new Program.Program(
+    new State.State(
+        new Maze.Maze(29, 49),
+        new Entity.DefaultFactory(),
+        2,
+        2
+    ),
     "img/pacman.gif",
-    20
+    ["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"],
+    20,
+    1000,
+    "game-canvas",
 );
 
-gPacman.draw(ctx);
+program.start();

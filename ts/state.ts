@@ -12,17 +12,18 @@ namespace State {
     export class State {
         iteration: number;
         level: number;
+        pacman: Entity.Pacman;
         enemies: Entity.Enemy[];
 
         constructor(
             public maze: Maze.Maze,
-            public pacman: Entity.Pacman,
             public enemyFactory: Entity.EnemyFactory,
             private nStartingEnemies: number,
             private enemyUpdateDelay: number
         ) {
             this.iteration = 0;
             this.level = 0;
+            this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
             this.enemies = []
         }
 
@@ -34,13 +35,16 @@ namespace State {
 
             shuffle(points);
             points.splice(nEnemies, points.length);
+            console.log(points);
 
             this.enemies = this.enemyFactory.make(points);
+            console.log(this.enemies);
         }
 
         init(): void {
             ++this.level;
 
+            this.maze.generate();
             this.pacman.location = new Maze.Point(0, 0);
             this.initEnemies();
         }
