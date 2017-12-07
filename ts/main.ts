@@ -28,6 +28,22 @@ namespace Program {
             }, this.updateRate);
         }
 
+        onKeydown(e: KeyboardEvent): void {
+            this.state.pacmanDirection =
+                e.key == "ArrowUp" ? Entity.Direction.Up
+                : e.key == "ArrowDown" ? Entity.Direction.Down
+                : e.key == "ArrowLeft" ? Entity.Direction.Left
+                : e.key == "ArrowRight" ? Entity.Direction.Right
+                : this.state.pacmanDirection;
+        }
+
+        onKeyup(e: KeyboardEvent): void {
+            if (e.key == "ArrowUp" || e.key == "ArrowDown"
+                || e.key == "ArrowLeft" || e.key == "ArrowRight") {
+                this.state.pacmanDirection = null;
+            }
+        }
+
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
 
