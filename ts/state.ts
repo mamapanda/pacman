@@ -13,6 +13,7 @@ namespace State {
         iteration: number;
         level: number;
         pacman: Entity.Pacman;
+        pacmanDirection: Entity.Direction;
         enemies: Entity.Enemy[];
 
         constructor(
@@ -47,8 +48,8 @@ namespace State {
             this.initEnemies();
         }
 
-        advance(pacmanDirection: Entity.Direction): void {
-            this.pacman.move(p => this.maze.pathAt(p), pacmanDirection);
+        advance(): void {
+            this.pacman.move(p => this.maze.pathAt(p), this.pacmanDirection);
             this.checkPacman();
 
             if (this.iteration % this.enemyUpdateDelay == 0) {

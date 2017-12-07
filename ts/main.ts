@@ -23,7 +23,8 @@ namespace Program {
 
             setInterval(() => {
                 this.draw();
-                this.state.advance(Entity.Direction.Left);
+                this.state.advance();
+                this.state.pacmanDirection = null;
             }, this.updateRate);
         }
 

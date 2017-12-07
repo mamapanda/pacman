@@ -212,6 +212,9 @@ var Entity;
             return _this;
         }
         Pacman.prototype.move = function (pathAt, direction) {
+            if (direction == null) {
+                return;
+            }
             var newLocation = this.location.copy();
             switch (direction) {
                 case Direction.Up:
@@ -383,9 +386,9 @@ var State;
             this.pacman.location = new Maze.Point(0, 0);
             this.initEnemies();
         };
-        State.prototype.advance = function (pacmanDirection) {
+        State.prototype.advance = function () {
             var _this = this;
-            this.pacman.move(function (p) { return _this.maze.pathAt(p); }, pacmanDirection);
+            this.pacman.move(function (p) { return _this.maze.pathAt(p); }, this.pacmanDirection);
             this.checkPacman();
             if (this.iteration % this.enemyUpdateDelay == 0) {
                 this.enemies.forEach(function (e) {
@@ -474,7 +477,8 @@ var Program;
             this.initDrawers();
             setInterval(function () {
                 _this.draw();
-                _this.state.advance(Entity.Direction.Left);
+                _this.state.advance();
+                _this.state.pacmanDirection = null;
             }, this.updateRate);
         };
         Program.prototype.initCanvas = function (canvasId) {

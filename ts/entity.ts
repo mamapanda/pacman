@@ -23,6 +23,10 @@ namespace Entity {
         }
 
         move(pathAt: (point: Maze.Point) => boolean, direction: Direction): void {
+            if (direction == null) {
+                return;
+            }
+
             let newLocation: Maze.Point = this.location.copy();
 
             switch (direction) {
