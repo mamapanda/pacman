@@ -57,6 +57,10 @@ namespace State {
                     e.move(p => this.maze.pathAt(p), this.pacman)
                 });
             }
+
+            this.checkPacman();
+
+            ++this.iteration;
         }
 
         private checkPacman(): void {

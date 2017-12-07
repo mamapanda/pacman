@@ -21,31 +21,64 @@ namespace Program {
             this.state.init();
             this.initDrawers();
 
-            setInterval(() => {
+            this.interval = setInterval(() => {
                 this.draw();
                 this.state.advance();
-                this.state.pacmanDirection = null;
             }, this.updateRate);
+
+            window.addEventListener("keydown", e => this.onKeydown(e));
+            window.addEventListener("keyup", e => this.onKeyup(e));
+        }
+
+        stop(): void {
+            clearInterval(this.interval);
         }
 
         onKeydown(e: KeyboardEvent): void {
-            this.state.pacmanDirection =
-                e.key == "ArrowUp" ? Entity.Direction.Up
-                : e.key == "ArrowDown" ? Entity.Direction.Down
-                : e.key == "ArrowLeft" ? Entity.Direction.Left
-                : e.key == "ArrowRight" ? Entity.Direction.Right
-                : this.state.pacmanDirection;
+            switch (e.keyCode) {
+            case 37:
+                this.state.pacmanDirection = Entity.Direction.Left;
+                break;
+            case 38:
+                this.state.pacmanDirection = Entity.Direction.Up;
+                break;
+            case 39:
+                this.state.pacmanDirection = Entity.Direction.Right;
+                break;
+            case 40:
+                this.state.pacmanDirection = Entity.Direction.Down;
+                break;
+            }
         }
 
         onKeyup(e: KeyboardEvent): void {
-            if (e.key == "ArrowUp" || e.key == "ArrowDown"
-                || e.key == "ArrowLeft" || e.key == "ArrowRight") {
-                this.state.pacmanDirection = null;
+            switch (e.keyCode) {
+            case 37:
+                if (this.state.pacmanDirection == Entity.Direction.Left) {
+                    this.state.pacmanDirection = null;
+                }
+                break;
+            case 38:
+                if (this.state.pacmanDirection == Entity.Direction.Up) {
+                    this.state.pacmanDirection = null;
+                }
+                break;
+            case 39:
+                if (this.state.pacmanDirection == Entity.Direction.Right) {
+                    this.state.pacmanDirection = null;
+                }
+                break;
+            case 40:
+                if (this.state.pacmanDirection == Entity.Direction.Down) {
+                    this.state.pacmanDirection = null;
+                }
+                break;
             }
         }
 
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
+        private interval: number;
 
         private initCanvas(canvasId: string): void {
             let canvas: HTMLCanvasElement =
@@ -159,7 +192,7 @@ let program = new Program.Builder()
     .setPathColor("black")
     .setWallColor("dimgray")
     .setTileWidth(20)
-    .setUpdateRate(250)
+    .setUpdateRate(100)
     .setCanvasId("game-canvas")
     .build();
 

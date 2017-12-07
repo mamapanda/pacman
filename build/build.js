@@ -395,6 +395,8 @@ var State;
                     e.move(function (p) { return _this.maze.pathAt(p); }, _this.pacman);
                 });
             }
+            this.checkPacman();
+            ++this.iteration;
         };
         State.prototype.checkPacman = function () {
             var _this = this;
@@ -475,11 +477,55 @@ var Program;
             var _this = this;
             this.state.init();
             this.initDrawers();
-            setInterval(function () {
+            this.interval = setInterval(function () {
                 _this.draw();
                 _this.state.advance();
-                _this.state.pacmanDirection = null;
             }, this.updateRate);
+            window.addEventListener("keydown", function (e) { return _this.onKeydown(e); });
+            window.addEventListener("keyup", function (e) { return _this.onKeyup(e); });
+        };
+        Program.prototype.stop = function () {
+            clearInterval(this.interval);
+        };
+        Program.prototype.onKeydown = function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    this.state.pacmanDirection = Entity.Direction.Left;
+                    break;
+                case 38:
+                    this.state.pacmanDirection = Entity.Direction.Up;
+                    break;
+                case 39:
+                    this.state.pacmanDirection = Entity.Direction.Right;
+                    break;
+                case 40:
+                    this.state.pacmanDirection = Entity.Direction.Down;
+                    break;
+            }
+        };
+        Program.prototype.onKeyup = function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    if (this.state.pacmanDirection == Entity.Direction.Left) {
+                        this.state.pacmanDirection = null;
+                    }
+                    break;
+                case 38:
+                    if (this.state.pacmanDirection == Entity.Direction.Up) {
+                        this.state.pacmanDirection = null;
+                    }
+                    break;
+                case 39:
+                    if (this.state.pacmanDirection == Entity.Direction.Right) {
+                        this.state.pacmanDirection = null;
+                    }
+                    break;
+                case 40:
+                    if (this.state.pacmanDirection == Entity.Direction.Down) {
+                        this.state.pacmanDirection = null;
+                    }
+                    break;
+            }
         };
         Program.prototype.initCanvas = function (canvasId) {
             var canvas = document.getElementById(canvasId);
@@ -551,7 +597,7 @@ var program = new Program.Builder()
     .setPathColor("black")
     .setWallColor("dimgray")
     .setTileWidth(20)
-    .setUpdateRate(250)
+    .setUpdateRate(100)
     .setCanvasId("game-canvas")
     .build();
 program.start();
