@@ -192,7 +192,7 @@ let program = new Program.Builder()
     .setPathColor("black")
     .setWallColor("dimgray")
     .setTileWidth(20)
-    .setUpdateRate(100)
+    .setUpdateRate(75)
     .setCanvasId("game-canvas")
     .build();
 

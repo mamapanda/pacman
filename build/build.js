@@ -330,25 +330,28 @@ var Entity;
         return GreedyEnemy;
     }(AdvancedEnemy));
     Entity_1.GreedyEnemy = GreedyEnemy;
-    var DefaultFactory = (function () {
-        function DefaultFactory() {
+    var EnemyFactory = (function () {
+        function EnemyFactory(ctors) {
+            this.ctors = ctors;
         }
-        DefaultFactory.prototype.make = function (points) {
+        EnemyFactory.prototype.make = function (points) {
             var enemies = [];
             for (var i = 0; i < points.length; ++i) {
-                switch (i % 2) {
-                    case 0:
-                        enemies.push(new RandomEnemy(points[i]));
-                        break;
-                    case 1:
-                        enemies.push(new GreedyEnemy(points[i]));
-                        break;
-                }
+                var index = i % this.ctors.length;
+                enemies.push(new this.ctors[index](points[i]));
             }
             return enemies;
         };
-        return DefaultFactory;
+        return EnemyFactory;
     }());
+    Entity_1.EnemyFactory = EnemyFactory;
+    var DefaultFactory = (function (_super) {
+        __extends(DefaultFactory, _super);
+        function DefaultFactory() {
+            return _super.call(this, [RandomEnemy, GreedyEnemy]) || this;
+        }
+        return DefaultFactory;
+    }(EnemyFactory));
     Entity_1.DefaultFactory = DefaultFactory;
 })(Entity || (Entity = {}));
 var State;
@@ -597,7 +600,7 @@ var program = new Program.Builder()
     .setPathColor("black")
     .setWallColor("dimgray")
     .setTileWidth(20)
-    .setUpdateRate(100)
+    .setUpdateRate(75)
     .setCanvasId("game-canvas")
     .build();
 program.start();
