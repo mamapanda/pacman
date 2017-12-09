@@ -149,6 +149,19 @@ namespace Entity {
             goal: Maze.Point,
             parent?: PointNode
         ): PointNode {
+            let gScore: number = 0;
+            let hScore: number = manhattanDistance(point, goal);
+
+            return new PointNode(point, gScore, hScore, parent);
+        }
+    }
+
+    export class AStarEnemy extends AdvancedEnemy {
+        protected heuristic(
+            point: Maze.Point,
+            goal: Maze.Point,
+            parent?: PointNode
+        ): PointNode {
             let gScore: number = parent == null ? 0 : parent.gScore + 1;
             let hScore: number = manhattanDistance(point, goal);
 
@@ -156,24 +169,26 @@ namespace Entity {
         }
     }
 
+    type EnemyCtor = new (location: Maze.Point) => Enemy;
+
     export abstract class EnemyFactory {
-        constructor(protected ctors: (new (location: Maze.Point) => Enemy)[]) {}
-
-        make(points: Maze.Point[]): Enemy[] {
-            let enemies: Enemy[] = []
-
-            for (let i: number = 0; i < points.length; ++i) {
-                let index: number = i % this.ctors.length;
-                enemies.push(new this.ctors[index](points[i]));
-            }
-
-            return enemies;
+        protected constructor(protected ctors: EnemyCtor[]) {
+            this.nMade = 0;
         }
+
+        make(point: Maze.Point): Enemy {
+            let ctor: EnemyCtor =  this.ctors[this.nMade % this.ctors.length];
+
+            ++this.nMade;
+            return new ctor(point);
+        }
+
+        protected nMade: number;
     }
 
     export class DefaultFactory extends EnemyFactory {
         constructor() {
-            super([RandomEnemy, GreedyEnemy]);
+            super([RandomEnemy, GreedyEnemy, AStarEnemy]);
         }
     }
 }

@@ -323,24 +323,35 @@ var Entity;
             return _super !== null && _super.apply(this, arguments) || this;
         }
         GreedyEnemy.prototype.heuristic = function (point, goal, parent) {
-            var gScore = parent == null ? 0 : parent.gScore + 1;
+            var gScore = 0;
             var hScore = manhattanDistance(point, goal);
             return new PointNode(point, gScore, hScore, parent);
         };
         return GreedyEnemy;
     }(AdvancedEnemy));
     Entity_1.GreedyEnemy = GreedyEnemy;
+    var AStarEnemy = (function (_super) {
+        __extends(AStarEnemy, _super);
+        function AStarEnemy() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        AStarEnemy.prototype.heuristic = function (point, goal, parent) {
+            var gScore = parent == null ? 0 : parent.gScore + 1;
+            var hScore = manhattanDistance(point, goal);
+            return new PointNode(point, gScore, hScore, parent);
+        };
+        return AStarEnemy;
+    }(AdvancedEnemy));
+    Entity_1.AStarEnemy = AStarEnemy;
     var EnemyFactory = (function () {
         function EnemyFactory(ctors) {
             this.ctors = ctors;
+            this.nMade = 0;
         }
-        EnemyFactory.prototype.make = function (points) {
-            var enemies = [];
-            for (var i = 0; i < points.length; ++i) {
-                var index = i % this.ctors.length;
-                enemies.push(new this.ctors[index](points[i]));
-            }
-            return enemies;
+        EnemyFactory.prototype.make = function (point) {
+            var ctor = this.ctors[this.nMade % this.ctors.length];
+            ++this.nMade;
+            return new ctor(point);
         };
         return EnemyFactory;
     }());
@@ -348,7 +359,7 @@ var Entity;
     var DefaultFactory = (function (_super) {
         __extends(DefaultFactory, _super);
         function DefaultFactory() {
-            return _super.call(this, [RandomEnemy, GreedyEnemy]) || this;
+            return _super.call(this, [RandomEnemy, GreedyEnemy, AStarEnemy]) || this;
         }
         return DefaultFactory;
     }(EnemyFactory));
@@ -365,45 +376,53 @@ var State;
         }
     }
     var State = (function () {
-        function State(maze, enemyFactory, nStartingEnemies, enemyUpdateDelay) {
+        function State(maze, enemyFactory, enemyUpdateDelay, enemyAddDelay, nStartingEnemies) {
             this.maze = maze;
             this.enemyFactory = enemyFactory;
-            this.nStartingEnemies = nStartingEnemies;
             this.enemyUpdateDelay = enemyUpdateDelay;
+            this.enemyAddDelay = enemyAddDelay;
             this.iteration = 0;
-            this.level = 0;
             this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
             this.enemies = [];
+            this.init(nStartingEnemies);
         }
-        State.prototype.initEnemies = function () {
+        State.prototype.addEnemy = function () {
             var _this = this;
-            var nEnemies = this.level + this.nStartingEnemies - 1;
-            var points = this.maze.paths().filter(function (p) { return _this.maze.quadrant(p) != Maze.Quadrant.I; });
+            var pacmanQuadrant = this.maze.quadrant(this.pacman.location);
+            var points = this.maze.paths().filter(function (p) {
+                return _this.maze.quadrant(p) != pacmanQuadrant
+                    && !_this.enemies.some(function (e) { return e.location.equals(p); });
+            });
             shuffle(points);
-            points.splice(nEnemies, points.length);
-            this.enemies = this.enemyFactory.make(points);
-        };
-        State.prototype.init = function () {
-            ++this.level;
-            this.maze.generate();
-            this.pacman.location = new Maze.Point(0, 0);
-            this.initEnemies();
+            this.enemies.push(this.enemyFactory.make(points[0]));
         };
         State.prototype.advance = function () {
             var _this = this;
-            this.pacman.move(function (p) { return _this.maze.pathAt(p); }, this.pacmanDirection);
-            this.checkPacman();
-            if (this.iteration % this.enemyUpdateDelay == 0) {
-                this.enemies.forEach(function (e) {
-                    e.move(function (p) { return _this.maze.pathAt(p); }, _this.pacman);
-                });
-            }
-            this.checkPacman();
             ++this.iteration;
+            this.pacman.move(function (p) { return _this.maze.pathAt(p); }, this.pacmanDirection);
+            if (this.iteration % this.enemyUpdateDelay == 0) {
+                this.updateEnemies();
+            }
+            if (this.iteration % this.enemyAddDelay == 0) {
+                this.addEnemy();
+                return true;
+            }
+            return false;
         };
-        State.prototype.checkPacman = function () {
+        State.prototype.initEnemies = function (nStartingEnemies) {
+            for (var i = 0; i < nStartingEnemies; ++i) {
+                this.addEnemy();
+            }
+        };
+        State.prototype.init = function (nStartingEnemies) {
+            this.maze.generate();
+            this.pacman.location = new Maze.Point(0, 0);
+            this.initEnemies(nStartingEnemies);
+        };
+        State.prototype.updateEnemies = function () {
             var _this = this;
             this.enemies.forEach(function (e) {
+                e.move(function (p) { return _this.maze.pathAt(p); }, _this.pacman);
                 if (e.collidesWith(_this.pacman)) {
                     _this.pacman.alive = false;
                 }
@@ -478,17 +497,20 @@ var Program;
         };
         Program.prototype.start = function () {
             var _this = this;
-            this.state.init();
             this.initDrawers();
-            this.interval = setInterval(function () {
+            this.draw();
+            var interval = setInterval(function () {
+                if (_this.state.advance()) {
+                    _this.addEnemyDrawer(_this.state.enemies[_this.state.enemies.length - 1]);
+                }
                 _this.draw();
-                _this.state.advance();
+                if (!_this.state.pacman.alive) {
+                    clearInterval(interval);
+                    alert("You lose!");
+                }
             }, this.updateRate);
             window.addEventListener("keydown", function (e) { return _this.onKeydown(e); });
             window.addEventListener("keyup", function (e) { return _this.onKeyup(e); });
-        };
-        Program.prototype.stop = function () {
-            clearInterval(this.interval);
         };
         Program.prototype.onKeydown = function (e) {
             switch (e.keyCode) {
@@ -536,15 +558,17 @@ var Program;
             canvas.height = this.state.maze.rows * this.tileWidth;
             this.ctx = canvas.getContext("2d");
         };
+        Program.prototype.addEnemyDrawer = function (e) {
+            var i = Math.floor(Math.random() * this.enemyImages.length);
+            var image = this.enemyImages[i];
+            this.drawers.push(new Graphics.EntityDrawer(e, this.tileWidth, image));
+        };
         Program.prototype.initDrawers = function () {
+            var _this = this;
             this.drawers = [];
             this.drawers.push(new Graphics.MazeDrawer(this.state.maze, this.pathColor, this.wallColor, this.tileWidth));
             this.drawers.push(new Graphics.EntityDrawer(this.state.pacman, this.tileWidth, this.pacmanImage));
-            for (var i = 0; i < this.state.enemies.length; ++i) {
-                var index = i % this.enemyImages.length;
-                var image = this.enemyImages[index];
-                this.drawers.push(new Graphics.EntityDrawer(this.state.enemies[i], this.tileWidth, image));
-            }
+            this.state.enemies.forEach(function (e) { return _this.addEnemyDrawer(e); });
         };
         return Program;
     }());
@@ -592,7 +616,7 @@ var Program;
     Program_1.Builder = Builder;
 })(Program || (Program = {}));
 var maze = new Maze.Maze(29, 49);
-var state = new State.State(maze, new Entity.DefaultFactory(), 2, 2);
+var state = new State.State(maze, new Entity.DefaultFactory(), 2, 70, 2);
 var program = new Program.Builder()
     .setState(state)
     .setPacmanImage("img/pacman.gif")

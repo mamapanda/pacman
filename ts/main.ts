@@ -18,20 +18,26 @@ namespace Program {
         }
 
         start(): void {
-            this.state.init();
             this.initDrawers();
+            this.draw();
 
-            this.interval = setInterval(() => {
+            let interval: number = setInterval(() => {
+                if (this.state.advance()) {
+                    this.addEnemyDrawer(
+                        this.state.enemies[this.state.enemies.length - 1]
+                    );
+                }
+
                 this.draw();
-                this.state.advance();
+
+                if (!this.state.pacman.alive) {
+                    clearInterval(interval);
+                    alert("You lose!");
+                }
             }, this.updateRate);
 
             window.addEventListener("keydown", e => this.onKeydown(e));
             window.addEventListener("keyup", e => this.onKeyup(e));
-        }
-
-        stop(): void {
-            clearInterval(this.interval);
         }
 
         onKeydown(e: KeyboardEvent): void {
@@ -78,7 +84,6 @@ namespace Program {
 
         private ctx: CanvasRenderingContext2D;
         private drawers: Graphics.Drawer[];
-        private interval: number;
 
         private initCanvas(canvasId: string): void {
             let canvas: HTMLCanvasElement =
@@ -88,6 +93,15 @@ namespace Program {
             canvas.height = this.state.maze.rows * this.tileWidth;
 
             this.ctx = canvas.getContext("2d");
+        }
+
+        private addEnemyDrawer(e: Entity.Enemy): void {
+            let i: number = Math.floor(Math.random() * this.enemyImages.length);
+            let image: string = this.enemyImages[i];
+
+            this.drawers.push(new Graphics.EntityDrawer(
+                e, this.tileWidth, image
+            ));
         }
 
         private initDrawers(): void {
@@ -105,16 +119,7 @@ namespace Program {
                 )
             );
 
-            for (let i: number = 0; i < this.state.enemies.length; ++i) {
-                let index: number = i % this.enemyImages.length;
-                let image: string = this.enemyImages[index];
-
-                this.drawers.push(
-                    new Graphics.EntityDrawer(
-                        this.state.enemies[i], this.tileWidth, image
-                    )
-                );
-            }
+            this.state.enemies.forEach(e => this.addEnemyDrawer(e));
         }
     }
 
@@ -184,7 +189,7 @@ namespace Program {
 }
 
 let maze = new Maze.Maze(29, 49);
-let state = new State.State(maze, new Entity.DefaultFactory(), 2, 2);
+let state = new State.State(maze, new Entity.DefaultFactory(), 2, 70, 2);
 let program = new Program.Builder()
     .setState(state)
     .setPacmanImage("img/pacman.gif")
