@@ -8,6 +8,7 @@
     },
 
     "files": [
+        "ts/functions.ts",
         "ts/maze.ts",
         "ts/entity.ts",
         "ts/state.ts",

@@ -1,4 +1,4 @@
-namespace Maze {
+namespace Base {
     export enum Quadrant {
         I, II, III, IV
     }
@@ -66,7 +66,7 @@ namespace Maze {
 
             for (let row: number = 0; row < this.rows; ++row) {
                 for (let col: number = 0; col < this.columns; ++col) {
-                    let point: Maze.Point = new Point(row, col);
+                    let point: Point = new Point(row, col);
 
                     if (this.pathAt(point)) {
                         points.push(point);

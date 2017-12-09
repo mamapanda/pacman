@@ -5,7 +5,7 @@ namespace Graphics {
 
     export class MazeDrawer implements Drawer {
         constructor(
-            public maze: Maze.Maze,
+            public maze: Base.Maze,
             public pathColor: string,
             public wallColor: string,
             public readonly tileWidth: number
@@ -14,7 +14,7 @@ namespace Graphics {
         draw(ctx: CanvasRenderingContext2D): void {
             for (let row: number = 0; row < this.maze.rows; ++row) {
                 for (let col: number = 0; col < this.maze.columns; ++col) {
-                    let path: boolean = this.maze.pathAt(new Maze.Point(row, col));
+                    let path: boolean = this.maze.pathAt(new Base.Point(row, col));
                     let color: string = path ? this.pathColor : this.wallColor;
                     let x: number = col * this.tileWidth;
                     let y: number = row * this.tileWidth;
@@ -28,7 +28,7 @@ namespace Graphics {
 
     export class EntityDrawer implements Drawer {
         constructor(
-            public entity: Entity.Entity,
+            public entity: Base.Entity,
             private width,
             imagePath: string
         ) {

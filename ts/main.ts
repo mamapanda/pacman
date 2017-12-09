@@ -1,18 +1,19 @@
 namespace Program {
     export class Program {
         constructor(
-            public state: State.State,
-            public readonly pacmanImage: string,
-            public readonly enemyImages: string[],
-            public readonly pathColor: string,
-            public readonly wallColor: string,
-            public readonly tileWidth: number,
-            public readonly updateRate: number,
+            public state: Base.State,
+            readonly pacmanImage: string,
+            readonly enemyImages: string[],
+            readonly pathColor: string,
+            readonly wallColor: string,
+            readonly tileWidth: number,
+            readonly updateRate: number,
             canvasId: string,
             scoreId: string
         ) {
             this.initCanvas(canvasId);
-            this.score =
+            this.initDrawers();
+            this.scoreElement =
                 document.getElementById(scoreId) as HTMLSpanElement;
         }
 
@@ -20,21 +21,8 @@ namespace Program {
             this.drawers.forEach(d => d.draw(this.ctx));
         }
 
-        start(): void {
-            this.initDrawers();
-            this.draw();
-
-            let interval: number = setInterval(() => {
-                this.advance();
-
-                if (!this.state.pacman.alive) {
-                    clearInterval(interval);
-                    alert("You lose!");
-                }
-            }, this.updateRate);
-
-            window.addEventListener("keydown", e => this.onKeydown(e));
-            window.addEventListener("keyup", e => this.onKeyup(e));
+        score(): number {
+            return this.state.iteration;
         }
 
         advance(): void {
@@ -45,22 +33,22 @@ namespace Program {
             }
 
             this.draw();
-            this.score.innerHTML = this.state.iteration.toString();
+            this.scoreElement.innerHTML = this.score().toString();
         }
 
         onKeydown(e: KeyboardEvent): void {
             switch (e.keyCode) {
             case 37:
-                this.state.pacmanDirection = Entity.Direction.Left;
+                this.state.pacmanDirection = Base.Direction.Left;
                 break;
             case 38:
-                this.state.pacmanDirection = Entity.Direction.Up;
+                this.state.pacmanDirection = Base.Direction.Up;
                 break;
             case 39:
-                this.state.pacmanDirection = Entity.Direction.Right;
+                this.state.pacmanDirection = Base.Direction.Right;
                 break;
             case 40:
-                this.state.pacmanDirection = Entity.Direction.Down;
+                this.state.pacmanDirection = Base.Direction.Down;
                 break;
             }
         }
@@ -68,30 +56,46 @@ namespace Program {
         onKeyup(e: KeyboardEvent): void {
             switch (e.keyCode) {
             case 37:
-                if (this.state.pacmanDirection == Entity.Direction.Left) {
+                if (this.state.pacmanDirection == Base.Direction.Left) {
                     this.state.pacmanDirection = null;
                 }
                 break;
             case 38:
-                if (this.state.pacmanDirection == Entity.Direction.Up) {
+                if (this.state.pacmanDirection == Base.Direction.Up) {
                     this.state.pacmanDirection = null;
                 }
                 break;
             case 39:
-                if (this.state.pacmanDirection == Entity.Direction.Right) {
+                if (this.state.pacmanDirection == Base.Direction.Right) {
                     this.state.pacmanDirection = null;
                 }
                 break;
             case 40:
-                if (this.state.pacmanDirection == Entity.Direction.Down) {
+                if (this.state.pacmanDirection == Base.Direction.Down) {
                     this.state.pacmanDirection = null;
                 }
                 break;
             }
         }
 
+        start(): void {
+            this.draw();
+
+            let interval: number = setInterval(() => {
+                this.advance();
+
+                if (!this.state.pacman.alive) {
+                    clearInterval(interval);
+                    alert(`You died!\n\nFinal Score: ${this.score()}`);
+                }
+            }, this.updateRate);
+
+            window.addEventListener("keydown", e => this.onKeydown(e));
+            window.addEventListener("keyup", e => this.onKeyup(e));
+        }
+
         private ctx: CanvasRenderingContext2D;
-        private score: HTMLSpanElement;
+        private scoreElement: HTMLSpanElement;
         private drawers: Graphics.Drawer[];
 
         private initCanvas(canvasId: string): void {
@@ -104,7 +108,7 @@ namespace Program {
             this.ctx = canvas.getContext("2d");
         }
 
-        private addEnemyDrawer(e: Entity.Enemy): void {
+        private addEnemyDrawer(e: Base.Enemy): void {
             let i: number = Math.floor(Math.random() * this.enemyImages.length);
             let image: string = this.enemyImages[i];
 
@@ -147,7 +151,7 @@ namespace Program {
             );
         }
 
-        setState(state: State.State): Builder {
+        setState(state: Base.State): Builder {
             this.state = state;
             return this;
         }
@@ -192,7 +196,7 @@ namespace Program {
             return this;
         }
 
-        private state: State.State;
+        private state: Base.State;
         private pacmanImage: string;
         private enemyImages: string[];
         private pathColor: string;
@@ -204,18 +208,23 @@ namespace Program {
     }
 }
 
-let maze = new Maze.Maze(29, 49);
-let state = new State.State(maze, new Entity.DefaultFactory(), 2, 70, 2);
-let program = new Program.Builder()
-    .setState(state)
-    .setPacmanImage("img/pacman.gif")
-    .setEnemyImages(["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"])
-    .setPathColor("black")
-    .setWallColor("dimgray")
-    .setTileWidth(20)
-    .setUpdateRate(75)
-    .setCanvasId("game-canvas")
-    .setScoreId("score")
-    .build();
+window.onload = () => {
+    let maze = new Base.Maze(29, 49);
+    let state = new Base.State(maze, new Base.DefaultFactory(), 2, 70, 3);
+    let program = new Program.Builder()
+        .setState(state)
+        .setPacmanImage("img/pacman.gif")
+        .setEnemyImages([
+            "img/blueghost.gif",
+            "img/redghost.gif",
+            "img/purpleghost.gif"
+        ]).setPathColor("black")
+        .setWallColor("dimgray")
+        .setTileWidth(20)
+        .setUpdateRate(75)
+        .setCanvasId("game-canvas")
+        .setScoreId("score")
+        .build();
 
-program.start();
+    program.start();
+}

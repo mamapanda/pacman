@@ -1,4 +1,4 @@
-namespace Entity {
+namespace Base {
     export enum Direction {
         Up,
         Down,
@@ -7,7 +7,7 @@ namespace Entity {
     }
 
     export class Entity {
-        constructor(public location: Maze.Point) {}
+        constructor(public location: Point) {}
 
         collidesWith(other: Entity): boolean {
             return this.location.equals(other.location);
@@ -17,17 +17,17 @@ namespace Entity {
     export class Pacman extends Entity {
         alive: boolean;
 
-        constructor(location: Maze.Point) {
+        constructor(location: Point) {
             super(location);
             this.alive = true;
         }
 
-        move(pathAt: (point: Maze.Point) => boolean, direction: Direction): void {
+        move(pathAt: (point: Point) => boolean, direction: Direction): void {
             if (direction == null) {
                 return;
             }
 
-            let newLocation: Maze.Point = this.location.copy();
+            let newLocation: Point = this.location.copy();
 
             switch (direction) {
             case Direction.Up:
@@ -52,7 +52,7 @@ namespace Entity {
 
     class PointNode {
         constructor(
-            readonly point: Maze.Point,
+            readonly point: Point,
             readonly gScore: number,
             readonly hScore: number,
             readonly parent?: PointNode
@@ -63,33 +63,29 @@ namespace Entity {
         }
     }
 
-    function manhattanDistance(p1: Maze.Point, p2: Maze.Point): number {
-            return Math.abs(p1.row - p2.row) + Math.abs(p1.column - p2.column);
-    }
-
     export abstract class Enemy extends Entity {
         abstract move(
-            pathAt: (point: Maze.Point) => boolean,
+            pathAt: (point: Point) => boolean,
             target: Pacman
         ): void;
 
         protected static pathsFrom(
-            pathAt: (point: Maze.Point) => boolean,
-            point: Maze.Point
-        ): Maze.Point[] {
+            pathAt: (point: Point) => boolean,
+            point: Point
+        ): Point[] {
             return point.adjacents().filter(p => pathAt(p));
         }
     }
 
     export class RandomEnemy extends Enemy {
-        move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
-            let paths: Maze.Point[] = Enemy.pathsFrom(pathAt, this.location);
+        move(pathAt: (point: Point) => boolean, target: Pacman): void {
+            let paths: Point[] = Enemy.pathsFrom(pathAt, this.location);
             this.location = paths[Math.floor(Math.random() * paths.length)];
         }
     }
 
     abstract class AdvancedEnemy extends Enemy {
-        move(pathAt: (point: Maze.Point) => boolean, target: Pacman): void {
+        move(pathAt: (point: Point) => boolean, target: Pacman): void {
             if (this.location.equals(target.location)) {
                 return;
             }
@@ -104,14 +100,14 @@ namespace Entity {
         }
 
         protected searchPath(
-            pathAt: (point: Maze.Point) => boolean,
-            goal: Maze.Point
+            pathAt: (point: Point) => boolean,
+            goal: Point
         ): PointNode {
             let start: PointNode = new PointNode(
                 this.location, 0, manhattanDistance(this.location, goal)
             );
             let openSet: PointNode[] = [start];
-            let closedSet: Maze.Point[] = [];
+            let closedSet: Point[] = [];
 
             while (openSet.length > 0) {
                 let node: PointNode = openSet.reduce(
@@ -137,16 +133,16 @@ namespace Entity {
         }
 
         protected abstract heuristic(
-            point: Maze.Point,
-            goal: Maze.Point,
+            point: Point,
+            goal: Point,
             parent?: PointNode
         ): PointNode;
     }
 
     export class GreedyEnemy extends AdvancedEnemy {
         protected heuristic(
-            point: Maze.Point,
-            goal: Maze.Point,
+            point: Point,
+            goal: Point,
             parent?: PointNode
         ): PointNode {
             let gScore: number = 0;
@@ -158,8 +154,8 @@ namespace Entity {
 
     export class AStarEnemy extends AdvancedEnemy {
         protected heuristic(
-            point: Maze.Point,
-            goal: Maze.Point,
+            point: Point,
+            goal: Point,
             parent?: PointNode
         ): PointNode {
             let gScore: number = parent == null ? 0 : parent.gScore + 1;
@@ -169,14 +165,14 @@ namespace Entity {
         }
     }
 
-    type EnemyCtor = new (location: Maze.Point) => Enemy;
+    type EnemyCtor = new (location: Point) => Enemy;
 
     export abstract class EnemyFactory {
         protected constructor(protected ctors: EnemyCtor[]) {
             this.nMade = 0;
         }
 
-        make(point: Maze.Point): Enemy {
+        make(point: Point): Enemy {
             let ctor: EnemyCtor =  this.ctors[this.nMade % this.ctors.length];
 
             ++this.nMade;

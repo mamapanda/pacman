@@ -1,12 +1,23 @@
-var Maze;
-(function (Maze_1) {
+function manhattanDistance(p1, p2) {
+    return Math.abs(p1.row - p2.row) + Math.abs(p1.column - p2.column);
+}
+function shuffle(xs) {
+    for (var i = xs.length - 1; i >= 0; --i) {
+        var index = Math.floor((i + 1) * Math.random());
+        var temp = xs[i];
+        xs[i] = xs[index];
+        xs[index] = temp;
+    }
+}
+var Base;
+(function (Base) {
     var Quadrant;
     (function (Quadrant) {
         Quadrant[Quadrant["I"] = 0] = "I";
         Quadrant[Quadrant["II"] = 1] = "II";
         Quadrant[Quadrant["III"] = 2] = "III";
         Quadrant[Quadrant["IV"] = 3] = "IV";
-    })(Quadrant = Maze_1.Quadrant || (Maze_1.Quadrant = {}));
+    })(Quadrant = Base.Quadrant || (Base.Quadrant = {}));
     var Point = (function () {
         function Point(row, column) {
             this.row = row;
@@ -31,7 +42,7 @@ var Maze;
         };
         return Point;
     }());
-    Maze_1.Point = Point;
+    Base.Point = Point;
     var Maze = (function () {
         function Maze(rows, columns) {
             this.rows = rows;
@@ -178,22 +189,22 @@ var Maze;
         };
         return Maze;
     }());
-    Maze_1.Maze = Maze;
-})(Maze || (Maze = {}));
+    Base.Maze = Maze;
+})(Base || (Base = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Entity;
-(function (Entity_1) {
+var Base;
+(function (Base) {
     var Direction;
     (function (Direction) {
         Direction[Direction["Up"] = 0] = "Up";
         Direction[Direction["Down"] = 1] = "Down";
         Direction[Direction["Left"] = 2] = "Left";
         Direction[Direction["Right"] = 3] = "Right";
-    })(Direction = Entity_1.Direction || (Entity_1.Direction = {}));
+    })(Direction = Base.Direction || (Base.Direction = {}));
     var Entity = (function () {
         function Entity(location) {
             this.location = location;
@@ -203,7 +214,7 @@ var Entity;
         };
         return Entity;
     }());
-    Entity_1.Entity = Entity;
+    Base.Entity = Entity;
     var Pacman = (function (_super) {
         __extends(Pacman, _super);
         function Pacman(location) {
@@ -236,7 +247,7 @@ var Entity;
         };
         return Pacman;
     }(Entity));
-    Entity_1.Pacman = Pacman;
+    Base.Pacman = Pacman;
     var PointNode = (function () {
         function PointNode(point, gScore, hScore, parent) {
             this.point = point;
@@ -249,9 +260,6 @@ var Entity;
         };
         return PointNode;
     }());
-    function manhattanDistance(p1, p2) {
-        return Math.abs(p1.row - p2.row) + Math.abs(p1.column - p2.column);
-    }
     var Enemy = (function (_super) {
         __extends(Enemy, _super);
         function Enemy() {
@@ -262,7 +270,7 @@ var Entity;
         };
         return Enemy;
     }(Entity));
-    Entity_1.Enemy = Enemy;
+    Base.Enemy = Enemy;
     var RandomEnemy = (function (_super) {
         __extends(RandomEnemy, _super);
         function RandomEnemy() {
@@ -274,7 +282,7 @@ var Entity;
         };
         return RandomEnemy;
     }(Enemy));
-    Entity_1.RandomEnemy = RandomEnemy;
+    Base.RandomEnemy = RandomEnemy;
     var AdvancedEnemy = (function (_super) {
         __extends(AdvancedEnemy, _super);
         function AdvancedEnemy() {
@@ -329,7 +337,7 @@ var Entity;
         };
         return GreedyEnemy;
     }(AdvancedEnemy));
-    Entity_1.GreedyEnemy = GreedyEnemy;
+    Base.GreedyEnemy = GreedyEnemy;
     var AStarEnemy = (function (_super) {
         __extends(AStarEnemy, _super);
         function AStarEnemy() {
@@ -342,7 +350,7 @@ var Entity;
         };
         return AStarEnemy;
     }(AdvancedEnemy));
-    Entity_1.AStarEnemy = AStarEnemy;
+    Base.AStarEnemy = AStarEnemy;
     var EnemyFactory = (function () {
         function EnemyFactory(ctors) {
             this.ctors = ctors;
@@ -355,7 +363,7 @@ var Entity;
         };
         return EnemyFactory;
     }());
-    Entity_1.EnemyFactory = EnemyFactory;
+    Base.EnemyFactory = EnemyFactory;
     var DefaultFactory = (function (_super) {
         __extends(DefaultFactory, _super);
         function DefaultFactory() {
@@ -363,18 +371,10 @@ var Entity;
         }
         return DefaultFactory;
     }(EnemyFactory));
-    Entity_1.DefaultFactory = DefaultFactory;
-})(Entity || (Entity = {}));
-var State;
-(function (State_1) {
-    function shuffle(xs) {
-        for (var i = xs.length - 1; i >= 0; --i) {
-            var index = Math.floor((i + 1) * Math.random());
-            var temp = xs[i];
-            xs[i] = xs[index];
-            xs[index] = temp;
-        }
-    }
+    Base.DefaultFactory = DefaultFactory;
+})(Base || (Base = {}));
+var Base;
+(function (Base) {
     var State = (function () {
         function State(maze, enemyFactory, enemyUpdateDelay, enemyAddDelay, nStartingEnemies) {
             this.maze = maze;
@@ -382,7 +382,7 @@ var State;
             this.enemyUpdateDelay = enemyUpdateDelay;
             this.enemyAddDelay = enemyAddDelay;
             this.iteration = 0;
-            this.pacman = new Entity.Pacman(new Maze.Point(0, 0));
+            this.pacman = new Base.Pacman(new Base.Point(0, 0));
             this.enemies = [];
             this.init(nStartingEnemies);
         }
@@ -416,7 +416,7 @@ var State;
         };
         State.prototype.init = function (nStartingEnemies) {
             this.maze.generate();
-            this.pacman.location = new Maze.Point(0, 0);
+            this.pacman.location = new Base.Point(0, 0);
             this.initEnemies(nStartingEnemies);
         };
         State.prototype.updateEnemies = function () {
@@ -430,8 +430,8 @@ var State;
         };
         return State;
     }());
-    State_1.State = State;
-})(State || (State = {}));
+    Base.State = State;
+})(Base || (Base = {}));
 var Graphics;
 (function (Graphics) {
     var MazeDrawer = (function () {
@@ -444,7 +444,7 @@ var Graphics;
         MazeDrawer.prototype.draw = function (ctx) {
             for (var row = 0; row < this.maze.rows; ++row) {
                 for (var col = 0; col < this.maze.columns; ++col) {
-                    var path = this.maze.pathAt(new Maze.Point(row, col));
+                    var path = this.maze.pathAt(new Base.Point(row, col));
                     var color = path ? this.pathColor : this.wallColor;
                     var x = col * this.tileWidth;
                     var y = row * this.tileWidth;
@@ -490,73 +490,76 @@ var Program;
             this.tileWidth = tileWidth;
             this.updateRate = updateRate;
             this.initCanvas(canvasId);
-            this.score =
+            this.initDrawers();
+            this.scoreElement =
                 document.getElementById(scoreId);
         }
         Program.prototype.draw = function () {
             var _this = this;
             this.drawers.forEach(function (d) { return d.draw(_this.ctx); });
         };
-        Program.prototype.start = function () {
-            var _this = this;
-            this.initDrawers();
-            this.draw();
-            var interval = setInterval(function () {
-                _this.advance();
-                if (!_this.state.pacman.alive) {
-                    clearInterval(interval);
-                    alert("You lose!");
-                }
-            }, this.updateRate);
-            window.addEventListener("keydown", function (e) { return _this.onKeydown(e); });
-            window.addEventListener("keyup", function (e) { return _this.onKeyup(e); });
+        Program.prototype.score = function () {
+            return this.state.iteration;
         };
         Program.prototype.advance = function () {
             if (this.state.advance()) {
                 this.addEnemyDrawer(this.state.enemies[this.state.enemies.length - 1]);
             }
             this.draw();
-            this.score.innerHTML = this.state.iteration.toString();
+            this.scoreElement.innerHTML = this.score().toString();
         };
         Program.prototype.onKeydown = function (e) {
             switch (e.keyCode) {
                 case 37:
-                    this.state.pacmanDirection = Entity.Direction.Left;
+                    this.state.pacmanDirection = Base.Direction.Left;
                     break;
                 case 38:
-                    this.state.pacmanDirection = Entity.Direction.Up;
+                    this.state.pacmanDirection = Base.Direction.Up;
                     break;
                 case 39:
-                    this.state.pacmanDirection = Entity.Direction.Right;
+                    this.state.pacmanDirection = Base.Direction.Right;
                     break;
                 case 40:
-                    this.state.pacmanDirection = Entity.Direction.Down;
+                    this.state.pacmanDirection = Base.Direction.Down;
                     break;
             }
         };
         Program.prototype.onKeyup = function (e) {
             switch (e.keyCode) {
                 case 37:
-                    if (this.state.pacmanDirection == Entity.Direction.Left) {
+                    if (this.state.pacmanDirection == Base.Direction.Left) {
                         this.state.pacmanDirection = null;
                     }
                     break;
                 case 38:
-                    if (this.state.pacmanDirection == Entity.Direction.Up) {
+                    if (this.state.pacmanDirection == Base.Direction.Up) {
                         this.state.pacmanDirection = null;
                     }
                     break;
                 case 39:
-                    if (this.state.pacmanDirection == Entity.Direction.Right) {
+                    if (this.state.pacmanDirection == Base.Direction.Right) {
                         this.state.pacmanDirection = null;
                     }
                     break;
                 case 40:
-                    if (this.state.pacmanDirection == Entity.Direction.Down) {
+                    if (this.state.pacmanDirection == Base.Direction.Down) {
                         this.state.pacmanDirection = null;
                     }
                     break;
             }
+        };
+        Program.prototype.start = function () {
+            var _this = this;
+            this.draw();
+            var interval = setInterval(function () {
+                _this.advance();
+                if (!_this.state.pacman.alive) {
+                    clearInterval(interval);
+                    alert("You died!\n\nFinal Score: " + _this.score());
+                }
+            }, this.updateRate);
+            window.addEventListener("keydown", function (e) { return _this.onKeydown(e); });
+            window.addEventListener("keyup", function (e) { return _this.onKeyup(e); });
         };
         Program.prototype.initCanvas = function (canvasId) {
             var canvas = document.getElementById(canvasId);
@@ -625,17 +628,22 @@ var Program;
     }());
     Program_1.Builder = Builder;
 })(Program || (Program = {}));
-var maze = new Maze.Maze(29, 49);
-var state = new State.State(maze, new Entity.DefaultFactory(), 2, 70, 2);
-var program = new Program.Builder()
-    .setState(state)
-    .setPacmanImage("img/pacman.gif")
-    .setEnemyImages(["img/blueghost.gif", "img/redghost.gif", "img/purpleghost.gif"])
-    .setPathColor("black")
-    .setWallColor("dimgray")
-    .setTileWidth(20)
-    .setUpdateRate(75)
-    .setCanvasId("game-canvas")
-    .setScoreId("score")
-    .build();
-program.start();
+window.onload = function () {
+    var maze = new Base.Maze(29, 49);
+    var state = new Base.State(maze, new Base.DefaultFactory(), 2, 70, 3);
+    var program = new Program.Builder()
+        .setState(state)
+        .setPacmanImage("img/pacman.gif")
+        .setEnemyImages([
+        "img/blueghost.gif",
+        "img/redghost.gif",
+        "img/purpleghost.gif"
+    ]).setPathColor("black")
+        .setWallColor("dimgray")
+        .setTileWidth(20)
+        .setUpdateRate(75)
+        .setCanvasId("game-canvas")
+        .setScoreId("score")
+        .build();
+    program.start();
+};
