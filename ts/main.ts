@@ -8,9 +8,12 @@ namespace Program {
             public readonly wallColor: string,
             public readonly tileWidth: number,
             public readonly updateRate: number,
-            canvasId: string
+            canvasId: string,
+            scoreId: string
         ) {
             this.initCanvas(canvasId);
+            this.score =
+                document.getElementById(scoreId) as HTMLSpanElement;
         }
 
         draw(): void {
@@ -29,6 +32,7 @@ namespace Program {
                 }
 
                 this.draw();
+                this.score.innerText = this.state.iteration.toString();
 
                 if (!this.state.pacman.alive) {
                     clearInterval(interval);
@@ -83,6 +87,7 @@ namespace Program {
         }
 
         private ctx: CanvasRenderingContext2D;
+        private score: HTMLSpanElement;
         private drawers: Graphics.Drawer[];
 
         private initCanvas(canvasId: string): void {
@@ -133,47 +138,53 @@ namespace Program {
                 this.wallColor,
                 this.tileWidth,
                 this.updateRate,
-                this.canvasId
+                this.canvasId,
+                this.scoreId
             );
         }
 
-        setState(state: State.State) {
+        setState(state: State.State): Builder {
             this.state = state;
             return this;
         }
 
-        setPacmanImage(pacmanImage: string) {
+        setPacmanImage(pacmanImage: string): Builder {
             this.pacmanImage = pacmanImage;
             return this;
         }
 
-        setEnemyImages(enemyImages: string[]) {
+        setEnemyImages(enemyImages: string[]): Builder {
             this.enemyImages = enemyImages;
             return this;
         }
 
-        setPathColor(pathColor: string) {
+        setPathColor(pathColor: string): Builder {
             this.pathColor = pathColor;
             return this;
         }
 
-        setWallColor(wallColor: string) {
+        setWallColor(wallColor: string): Builder {
             this.wallColor = wallColor;
             return this;
         }
 
-        setTileWidth(tileWidth: number) {
+        setTileWidth(tileWidth: number): Builder {
             this.tileWidth = tileWidth;
             return this;
         }
 
-        setUpdateRate(updateRate: number) {
+        setUpdateRate(updateRate: number): Builder {
             this.updateRate = updateRate;
             return this;
         }
 
-        setCanvasId(canvasId: string) {
+        setCanvasId(canvasId: string): Builder {
             this.canvasId = canvasId;
+            return this;
+        }
+
+        setScoreId(scoreId: string): Builder {
+            this.scoreId = scoreId;
             return this;
         }
 
@@ -185,6 +196,7 @@ namespace Program {
         private tileWidth: number;
         private updateRate: number;
         private canvasId: string;
+        private scoreId: string;
     }
 }
 
@@ -199,6 +211,7 @@ let program = new Program.Builder()
     .setTileWidth(20)
     .setUpdateRate(75)
     .setCanvasId("game-canvas")
+    .setScoreId("score")
     .build();
 
 program.start();

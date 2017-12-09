@@ -481,7 +481,7 @@ var Graphics;
 var Program;
 (function (Program_1) {
     var Program = (function () {
-        function Program(state, pacmanImage, enemyImages, pathColor, wallColor, tileWidth, updateRate, canvasId) {
+        function Program(state, pacmanImage, enemyImages, pathColor, wallColor, tileWidth, updateRate, canvasId, scoreId) {
             this.state = state;
             this.pacmanImage = pacmanImage;
             this.enemyImages = enemyImages;
@@ -490,6 +490,8 @@ var Program;
             this.tileWidth = tileWidth;
             this.updateRate = updateRate;
             this.initCanvas(canvasId);
+            this.score =
+                document.getElementById(scoreId);
         }
         Program.prototype.draw = function () {
             var _this = this;
@@ -504,6 +506,7 @@ var Program;
                     _this.addEnemyDrawer(_this.state.enemies[_this.state.enemies.length - 1]);
                 }
                 _this.draw();
+                _this.score.innerText = _this.state.iteration.toString();
                 if (!_this.state.pacman.alive) {
                     clearInterval(interval);
                     alert("You lose!");
@@ -577,7 +580,7 @@ var Program;
         function Builder() {
         }
         Builder.prototype.build = function () {
-            return new Program(this.state, this.pacmanImage, this.enemyImages, this.pathColor, this.wallColor, this.tileWidth, this.updateRate, this.canvasId);
+            return new Program(this.state, this.pacmanImage, this.enemyImages, this.pathColor, this.wallColor, this.tileWidth, this.updateRate, this.canvasId, this.scoreId);
         };
         Builder.prototype.setState = function (state) {
             this.state = state;
@@ -611,6 +614,10 @@ var Program;
             this.canvasId = canvasId;
             return this;
         };
+        Builder.prototype.setScoreId = function (scoreId) {
+            this.scoreId = scoreId;
+            return this;
+        };
         return Builder;
     }());
     Program_1.Builder = Builder;
@@ -626,5 +633,6 @@ var program = new Program.Builder()
     .setTileWidth(20)
     .setUpdateRate(75)
     .setCanvasId("game-canvas")
+    .setScoreId("score")
     .build();
 program.start();
