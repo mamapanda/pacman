@@ -25,14 +25,7 @@ namespace Program {
             this.draw();
 
             let interval: number = setInterval(() => {
-                if (this.state.advance()) {
-                    this.addEnemyDrawer(
-                        this.state.enemies[this.state.enemies.length - 1]
-                    );
-                }
-
-                this.draw();
-                this.score.innerText = this.state.iteration.toString();
+                this.advance();
 
                 if (!this.state.pacman.alive) {
                     clearInterval(interval);
@@ -42,6 +35,17 @@ namespace Program {
 
             window.addEventListener("keydown", e => this.onKeydown(e));
             window.addEventListener("keyup", e => this.onKeyup(e));
+        }
+
+        advance(): void {
+            if (this.state.advance()) {
+                this.addEnemyDrawer(
+                    this.state.enemies[this.state.enemies.length - 1]
+                );
+            }
+
+            this.draw();
+            this.score.innerHTML = this.state.iteration.toString();
         }
 
         onKeydown(e: KeyboardEvent): void {

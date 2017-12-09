@@ -502,11 +502,7 @@ var Program;
             this.initDrawers();
             this.draw();
             var interval = setInterval(function () {
-                if (_this.state.advance()) {
-                    _this.addEnemyDrawer(_this.state.enemies[_this.state.enemies.length - 1]);
-                }
-                _this.draw();
-                _this.score.innerText = _this.state.iteration.toString();
+                _this.advance();
                 if (!_this.state.pacman.alive) {
                     clearInterval(interval);
                     alert("You lose!");
@@ -514,6 +510,13 @@ var Program;
             }, this.updateRate);
             window.addEventListener("keydown", function (e) { return _this.onKeydown(e); });
             window.addEventListener("keyup", function (e) { return _this.onKeyup(e); });
+        };
+        Program.prototype.advance = function () {
+            if (this.state.advance()) {
+                this.addEnemyDrawer(this.state.enemies[this.state.enemies.length - 1]);
+            }
+            this.draw();
+            this.score.innerHTML = this.state.iteration.toString();
         };
         Program.prototype.onKeydown = function (e) {
             switch (e.keyCode) {
